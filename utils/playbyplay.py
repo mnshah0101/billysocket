@@ -37,7 +37,7 @@ The Team is always short hand, such as WAS for Washington or BAL for Baltimore.
 The name of the table is playbyplay. 
 Instead of HomeTeam and AwayTeam, reference the Team column and the HomeOrAway Column, The Opponent column will have the opposite side.
 You will have to infer player names from little data from your understanding of the NFL. For example, if the user only says Kelce, you have to infer the name Travis Kelce
-
+When looking for specific match ups, look for plays with the same GameKey for the two teams playing each other.
 
 Only respond with the sql query, no explanation or anything else. Encompass the sql query with 
 ```sql
@@ -59,7 +59,7 @@ Given the database schema, here is the SQL query that answers `{user_question}`:
 
 ```sql
 SELECT SUM(RushingYards) AS Yards
-FROM teamlog
+FROM playbyplay
 WHERE Season = 2023 AND Name = 'Patrick Mahomes'
 ```
 
@@ -68,6 +68,7 @@ WHERE Season = 2023 AND Name = 'Patrick Mahomes'
 
 
 
+Your response will be executed on a database of NFL Play by Play logs and the answer will be returned to the User, so make sure the query is correct and will return the correct information.
 
 Assistant: 
 
@@ -107,7 +108,7 @@ PlayerID (REAL)
 Name (TEXT) - This is Player Name First Name Last Name
 Team_playstats (TEXT)
 Opponent_playstats (TEXT)
-HomeOrAway (TEXT)
+HomeOrAway (TEXT) - Can be HOME or AWAY
 Direction (TEXT)
 Updated_playstats (TEXT)
 Created_playstats (TEXT)
@@ -176,10 +177,10 @@ ExtraPointsHadBlocked (REAL)
 Penalties (REAL)
 PenaltyYards (REAL)
 ScoringPlay.GameKey (REAL)
-ScoringPlay.SeasonType (REAL)
+ScoringPlay.SeasonType (REAL) - (1=Regular Season, 2=Preseason, 3=Postseason, 4=Offseason, 5=AllStar).
 ScoringPlay.ScoringPlayID (REAL)
 ScoringPlay.Season (REAL)
-ScoringPlay.Week (REAL)
+ScoringPlay.Week (REAL) -The week resets for each season type. So the first week of the regular season is 1, the first week of the preseason is 1, etc.
 ScoringPlay.AwayTeam (TEXT)
 ScoringPlay.HomeTeam (TEXT)
 ScoringPlay.Date (TEXT)
@@ -192,10 +193,10 @@ ScoringPlay.AwayScore (REAL)
 ScoringPlay.HomeScore (REAL)
 ScoringPlay.ScoreID (REAL)
 GameKey (REAL)
-SeasonType (REAL)
+SeasonType (REAL) - (1=Regular Season, 2=Preseason, 3=Postseason, 4=Offseason, 5=AllStar).
 ScoringPlayID (REAL)
 Season (REAL)
-Week (REAL)
+Week (REAL) - The week resets for each season type. So the first week of the regular season is 1, the first week of the preseason is 1, etc.
 AwayTeam (TEXT)
 HomeTeam (TEXT)
 Date (TEXT)

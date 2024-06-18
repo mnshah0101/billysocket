@@ -56,13 +56,14 @@ Given the database schema, here is the SQL query that answers `{user_question}`:
 
 ```sql
 SELECT SUM(RushingYards) AS Yards
-FROM teamlog
+FROM playerlog
 WHERE Season = 2023 AND Name = 'Patrick Mahomes'
 ```
 
 </example_response>
 
 
+Your response will be executed on a database of NFL Player Logs and the answer will be returned to the User, so make sure the query is correct and will return the correct information.
 
 
 
@@ -77,10 +78,10 @@ sql_prompt = PromptTemplate.from_template(prompt_template)
 testnfl_metadata = """
 GameKey (INTEGER)
 PlayerID (INTEGER)
-SeasonType (INTEGER) - Regular: 1, POST: 2, Pre: 3
+SeasonType (INTEGER) - (1=Regular Season, 2=Preseason, 3=Postseason, 4=Offseason, 5=AllStar).
 Season (INTEGER)
 GameDate (TEXT)
-Week (INTEGER)
+Week (INTEGER) - The week resets for each season type. So the first week of the regular season is 1, the first week of the preseason is 1, etc.
 Team (TEXT)
 Opponent (TEXT)
 HomeOrAway (TEXT) - HOME or AWAY
@@ -250,7 +251,7 @@ source (INTEGER))"""
 def player_log_get_answer(model, question):
     llm = None
     if model == 'openai':
-        llm = ChatOpenAI(model='gpt-4o')
+        llm = ChatOpenAI(model='gpt-4o', temperature=0.96)
 
     elif model == 'anthropic':
         llm = ChatAnthropic(model_name='claude-3-opus-20240229',

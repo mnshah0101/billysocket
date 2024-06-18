@@ -35,7 +35,7 @@ This is the result of the sql query:
 Please answer the question: {user_question}
 
 
-Only answer in markdown format.
+Format the response to look good on a chat interface. Make sure to be concise and clear. Do not include any special characters.
 
 </prompt>
 
