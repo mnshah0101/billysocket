@@ -17,7 +17,7 @@ prompt_template = """
 User:
 
 <instructions>
-Generate a SQL query to answer the following question:
+You are a data analyst for an NFL team and you have been asked to generate a SQL query to answer the following question. You do not have to completely answer the question, just generate the SQL query to answer the question, and the result will be processed. Do your best to answer the question and do not use placeholder information. The question is:
 `{user_question}`
 
 </instructions>
@@ -46,11 +46,10 @@ If Cover Margin > 0, the team covered the spread.
 If Cover Margin < 0, the team did not cover the spread.
 If Cover Margin = 0, it is a push (no winner against the spread).
 
+A negative point spread means the team is favored to win, and a positive point spread means the team is the underdog.
 
 
-First, respond with a step-by-step explanation of how you would answer the question. Explain your thinking. Then,
-
-Respond with the sql query. Encompass the sql query with 
+Only respond with the sql query, no explanation or anything else. Encompass the sql query with 
 ```sql
 
 ```
@@ -59,11 +58,12 @@ Respond with the sql query. Encompass the sql query with
 A clever way to get the last game of a team is to do MAX(GameKey), which will give you the last game of the team. 
 
 
-Make sure everything in the ```sql
+This is a postgreSQL database, so you can use the full range of postgreSQL functions and operators.
+All columns must be surrounded by double quotes, such as "Name" or "Team".
 
-``` is correct, will execute, and will return the correct information.
 
-<special_instructions>
+
+</special_instructions>
 
 <question>
 
@@ -72,28 +72,24 @@ Given the database schema, here is the SQL query that answers `{user_question}`:
 
 </question>
 
+Here is an example response for the question: "Ravens record against the spread vs teams with winning records"
+
 
 <example_response>
-
-Step-by-Step Explanation
-1) First filter the data to only include the 2023 season and the Regular Season.
-2) Filter the data to only include the New England Patriots.
-3) Use a CASE statement to determine the outcome of the game against the spread.
-4) Calculate the number of wins, losses, and pushes against the spread.
-
 
 
 ```sql
 SELECT
-    SUM(CASE WHEN (Score + PointSpread) > OpponentScore THEN 1 ELSE 0 END) AS WinsAgainstSpread,
-    SUM(CASE WHEN (Score + PointSpread) < OpponentScore THEN 1 ELSE 0 END) AS LossesAgainstSpread,
-    SUM(CASE WHEN (Score + PointSpread) = OpponentScore THEN 1 ELSE 0 END) AS PushesAgainstSpread
+    SUM(CASE WHEN ("Score" + "PointSpread") > "OpponentScore" THEN 1 ELSE 0 END) AS WinsAgainstSpread,
+    SUM(CASE WHEN ("Score" + "PointSpread") < "OpponentScore" THEN 1 ELSE 0 END) AS LossesAgainstSpread,
+    SUM(CASE WHEN ("Score" + "PointSpread") = "OpponentScore" THEN 1 ELSE 0 END) AS PushesAgainstSpread
 FROM
     teamlog
 WHERE
-    Season = 2023
-    AND SeasonType = 1
-    AND Team = 'NE';
+    "Season" = 2023
+    AND "SeasonType" = 1
+    AND "Team" = 'BAL'
+    AND "OpponentWins" > OpponentLosses;
 ```
 
 </example_response>
@@ -113,22 +109,22 @@ sql_prompt = PromptTemplate.from_template(prompt_template)
 
 
 testnfl_metadata = """GameKey (INTEGER)
-Date (TEXT)
+Date (TEXT) - Format: 'YYYY-MM-DDTHH:MM:SS' Remember, this is not a Date type, it is a TEXT type.
 SeasonType (REAL)  - (1=Regular Season, 2=Preseason, 3=Postseason, 4=Offseason, 5=AllStar). The default season type is 1.
 Season (REAL) - The default season is 2023.
 Week (REAL)- The week resets for each season type. The default week is 1. Week 17 is the last week of the regular season.
 Team (TEXT) 
-Opponent (TEXT)
+Opponent (TEXT) - The name of the opponent team.
 HomeOrAway (TEXT) - Could be HOME or AWAY
 Score (REAL)
 OpponentScore (REAL)
 TotalScore (REAL)
-Stadium (TEXT)
+Stadium (TEXT) - This is where the game was played. Games in England were played in Wembley Stadium or Tottenham Hotspur Stadium
 PlayingSurface (TEXT) - Could be Artificial or Grass
 Temperature (REAL)
 Humidity (REAL)
 WindSpeed (REAL)
-OverUnder (REAL)
+OverUnder (REAL) - estimated total points scored in the game. Divide by 2 to get the average points per team.
 PointSpread (REAL)
 ScoreQuarter1 (REAL)
 ScoreQuarter2 (REAL)
@@ -261,11 +257,11 @@ KickoffsInEndZone (REAL)
 KickoffTouchbacks (REAL)
 PuntsHadBlocked (REAL)
 PuntNetAverage (REAL)
-ExtraPointKickingAttempts (REAL)
+ExtraPointKickingAttempts (REAL) 
 ExtraPointKickingConversions (REAL)
 ExtraPointsHadBlocked (REAL)
-ExtraPointPassingAttempts (REAL)
-ExtraPointPassingConversions (REAL)
+ExtraPointPassingAttempts (REAL) 
+ExtraPointPassingConversions (REAL) 
 ExtraPointRushingAttempts (REAL)
 ExtraPointRushingConversions (REAL)
 FieldGoalAttempts (REAL)
@@ -282,7 +278,7 @@ OpponentKickoffsInEndZone (REAL)
 OpponentKickoffTouchbacks (REAL)
 OpponentPuntsHadBlocked (REAL)
 OpponentPuntNetAverage (REAL)
-OpponentExtraPointKickingAttempts (REAL)
+OpponentExtraPointKickingAttempts (REAL) 
 OpponentExtraPointKickingConversions (REAL)
 OpponentExtraPointsHadBlocked (REAL)
 OpponentExtraPointPassingAttempts (REAL)
@@ -349,27 +345,27 @@ OpponentTwoPointConversionReturns (REAL)
 TeamID (REAL)
 OpponentID (REAL)
 Day (TEXT)
-DateTime (TEXT)
+DateTime (TEXT) - Looks like 2024-01-15T20:15:00
 GlobalGameID (REAL)
 GlobalTeamID (REAL)
 GlobalOpponentID (REAL)
 ScoreID (REAL)
 outer_key (INTEGER)
-HomeConference (TEXT)
-HomeDivision (TEXT)
+HomeConference (TEXT) - Can be AFC or NFC
+HomeDivision (TEXT) - Can be North, East, West, South
 HomeFullName (TEXT)
-HomeOffensiveScheme (TEXT)
-HomeDefensiveScheme (TEXT)
+HomeOffensiveScheme (TEXT) -   (3-4, 4-3)
+HomeDefensiveScheme (TEXT) - (PRO, 2TE, 3WR)
 HomeCity (TEXT)
-HomeStadiumDetails (TEXT)
+HomeStadiumDetails (TEXT) - A map that looks like "{'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'}"
 HomeHeadCoach (TEXT)
-AwayConference (TEXT)
-AwayDivision (TEXT)
+AwayConference (TEXT) - Can be AFC or NFC
+AwayDivision (TEXT) - Can be North, South, East, or West
 AwayFullName (TEXT)
-AwayOffensiveScheme (TEXT)
-AwayDefensiveScheme (TEXT)
+AwayOffensiveScheme (TEXT) - (PRO, 2TE, 3WR
+AwayDefensiveScheme (TEXT) - (3-4, 4-3)
 AwayCity (TEXT)
-AwayStadiumDetails (TEXT)
+AwayStadiumDetails (TEXT) - A map that looks like "{'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'}"
 AwayHeadCoach (TEXT)
 HomeOffensiveCoordinator (TEXT)
 HomeDefensiveCoordinator (TEXT)
@@ -379,6 +375,19 @@ AwayDefensiveCoordinator (TEXT)
 AWaySpecialTeamsCoach (TEXT)
 Wins (REAL) - These are the wins up to the current game. They reset each season and each season type.
 Losses (REAL) - These are the losses up to the current game. They reset each season and each season type.
+OpponentWins (REAL) - These are the opponent's wins up to the current game. They reset each season and each season type.
+OpponentLosses (REAL) - These are the opponent's losses up to the current game. They reset each season and each season type.
+StadiumID (INTEGER)
+Name (TEXT) - Home team Stadium Name
+City (TEXT) - Home team  City
+State (TEXT) - Home team state State
+Country (TEXT) - Home team Country
+Capacity (INTEGER) - Home team stadium Capacity
+PlayingSurface.1 (TEXT) - Home team stadium PlayingSurface
+GeoLat (REAL) - Home team Latitude
+GeoLong (REAL) - Home team Longitude
+Type (TEXT) - Home team type of stadium (Outdoor or Indoor)
+IsShortWeek (INTEGER) - 1 if the team is playing on a short week, 0 if not
 
 """
 
@@ -386,11 +395,11 @@ Losses (REAL) - These are the losses up to the current game. They reset each sea
 def team_log_get_answer(model, question):
     llm = None
     if model == 'openai':
-        llm = ChatOpenAI(model='gpt-4o', temperature=0.96)
+        llm = ChatOpenAI(model='gpt-4o', temperature=0.8)
 
     elif model == 'anthropic':
-        llm = ChatAnthropic(model_name='claude-3-opus-20240229',
-                         )
+        llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620')
+        
 
     llm_chain = sql_prompt | llm
     answer = llm_chain.invoke(

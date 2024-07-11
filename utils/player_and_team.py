@@ -15,7 +15,7 @@ prompt_template = """
 User:
 
 <instructions>
-Generate a SQL query to answer the following question:
+You are a data analyst for an NFL team and you have been asked to generate a SQL query to answer the following question. You do not have to completely answer the question, just generate the SQL query to answer the question, and the result will be processed. Do your best to answer the question and do not use placeholder information. The question is:
 `{user_question}`
 
 </instructions>
@@ -35,14 +35,38 @@ The tables to query are playerlog and teamlog.
 Make sure game keys are unique.
 Instead of HomeTeam and AwayTeam, reference the Team column and the HomeOrAway Column, The Opponent column will have the opposite side.
 You will have to infer player names from little data from your understanding of the NFL. For example, if the user only says Kelce, you have to infer the name Travis Kelce
+To calculate "Against the Spread" (ATS), you need to determine whether a team has covered the point spread in a game. The formula for ATS can be derived using the team score, opponent score, and point spread as follows:
 
+Formula:
+Calculate the Cover Margin:
+
+
+Cover Margin=(Score+PointSpread)-OpponentScore
+Determine ATS Result:
+
+If Cover Margin > 0, the team covered the spread.
+If Cover Margin < 0, the team did not cover the spread.
+If Cover Margin = 0, it is a push (no winner against the spread).
 
 Only respond with the sql query, no explanation or anything else. Encompass the sql query with 
 ```sql
 
 ```
 
+You can use MIN(GameKey) to get the earliest game and MAX(GameKey) to get the latest game.
 
+Remember, rookies in the 2023 season have a value of 2 in the Experience column.
+
+A player is injured if the InjuryStatus is Doubtful, Out, or Questionable.
+
+Make sure to use the DISTINCT keyword when necessary to avoid duplicate data.
+
+Usually, even when a player is out or injured, they will have a record in the database. However, sometimes, they might not have a record. Therefore to see how many games a player missed, you can use 17 (or whatever number) - COUNT(DISTINCT GameKey where the player played).
+
+Be careful of periods in the player name. For example, TJ Watt is T.J. Watt in the database.
+
+This is a postgreSQL database, so you can use the full range of postgreSQL functions and operators.
+All columns must be surrounded by double quotes, such as "Name" or "Team".
 </special_instructions>
 
 <question>
@@ -56,9 +80,9 @@ Given the database schema, here is the SQL query that answers `{user_question}`:
 <example_response>
 
 ```sql
-SELECT SUM(RushingYards) AS Yards
+SELECT SUM("RushingYards") AS Yards
 FROM playerlog
-WHERE Season = 2023 AND Name = 'Patrick Mahomes'
+WHERE "Season" = 2023 AND "Name" = 'Patrick Mahomes'
 ```
 
 </example_response>
@@ -345,8 +369,19 @@ AwayDefensiveCoordinator (TEXT)
 AWaySpecialTeamsCoach (TEXT)
 Wins (REAL) - These are the wins up to the current game. They reset each season and each season type.
 Losses (REAL) - These are the losses up to the current game. They reset each season and each season type.
-
-
+OpponentWins (REAL) - These are the opponent's wins up to the current game. They reset each season and each season type.
+OpponentLosses (REAL) - These are the opponent's losses up to the current game. They reset each season and each season type.
+IsShortWeek (INTEGER) - 1 if the team has a short week, 0 otherwise
+StadiumID (INTEGER)
+Name (TEXT) - Home team Stadium Name
+City (TEXT) - Home team  City
+State (TEXT) - Home team state State
+Country (TEXT) - Home team Country
+Capacity (INTEGER) - Home team stadium Capacity
+PlayingSurface.1 (TEXT) - Home team stadium PlayingSurface
+GeoLat (REAL) - Home team Latitude
+GeoLong (REAL) - Home team Longitude
+Type (TEXT) - Home team type of stadium (Outdoor or Indoor)
 
 Table: playerlog
 GameKey (INTEGER)
@@ -360,11 +395,11 @@ Opponent (TEXT)
 HomeOrAway (TEXT) - HOME or AWAY
 Number (INTEGER)
 Name (TEXT) - First Name and Last Name
-Position (TEXT)
-PositionCategory (TEXT)
+Position (TEXT) - Player's position for this particular game or season. Possible values: C, CB, DB, DE, DE/LB, DL, DT, FB, FS, G, ILB, K, KR, LB, LS, NT, OL, OLB, OT, P, QB, RB, S, SS, T, TE, WR
+PositionCategory (TEXT) - Abbreviation of either Offense, Defense or Special Teams (OFF, DEF, ST)
 Activated (INTEGER)
-Played (INTEGER)
-Started (INTEGER)
+Played (INTEGER) - 1 if player has atleast one play, 0 otherwise
+Started (INTEGER) - 1 is player has started
 PassingAttempts (REAL)
 PassingCompletions (REAL)
 PassingYards (REAL)
@@ -491,10 +526,8 @@ FieldGoalsMade50Plus (REAL)
 FantasyPointsDraftKings (REAL)
 YahooSalary (REAL)
 FantasyPointsYahoo (REAL)
-InjuryStatus (TEXT)
+InjuryStatus (TEXT) = [None, 'Questionable', 'Probable', 'Out', 'Doubtful']
 InjuryBodyPart (TEXT)
-InjuryStartDate (TEXT)
-InjuryNotes (TEXT)
 FanDuelPosition (TEXT)
 DraftKingsPosition (TEXT)
 YahooPosition (TEXT)
@@ -502,7 +535,7 @@ OpponentRank (REAL)
 OpponentPositionRank (REAL)
 InjuryPractice (REAL)
 InjuryPracticeDescription (REAL)
-DeclaredInactive (INTEGER)
+DeclaredInactive (INTEGER) - If the player is retired or still playing.
 FantasyDraftSalary (REAL)
 FantasyDraftPosition (REAL)
 TeamID (INTEGER)
@@ -517,8 +550,35 @@ FantasyPointsFantasyDraft (REAL)
 OffensiveFumbleRecoveryTouchdowns (REAL)
 SnapCountsConfirmed (INTEGER)
 Updated (TEXT)
-ScoringDetails (TEXT)
-source (INTEGER))"""
+ScoringDetails (TEXT) - A JSON array of scoring details if the player scored any points in the game. It looks like this: 
+[{'GameKey': '200230131',
+  'SeasonType': 3,
+  'PlayerID': 8223,
+  'Team': 'SF',
+  'Season': 2002,
+  'Week': 1,
+  'ScoringType': 'RushingTouchdown',
+  'Length': 14,
+  'ScoringDetailID': 292738,
+  'PlayerGameID': 1797109,
+  'ScoringPlayID': 78786}]
+
+source (INTEGER))
+Wins (REAL) - This is the number of wins the team had in the season up to this point
+OpponentWins (REAL) - This is the number of wins the opponent had in the season up to this point
+Losses (REAL)  - This is the number of losses the team had in the season up to this point
+OpponentLosses (REAL)  - This is the number of losses the opponent had in the season up to this point
+PointSpread (REAL) - This is the point spread of the game.
+Score (REAL) - This is the score of the team
+OpponentScore (REAL) - This is the score of the opponent
+Status (TEXT) - Active or Inactive
+Height (TEXT) - Height in feet and inches like 6'0"
+BirthDate (TEXT) - The birthdate of the player like 1999-08-31T00:00:00
+Weight (REAL) - The weight of the player in pounds
+College (TEXT) - The college the player attended
+Experience (REAL) - The number of years the player has played in the NFL. Since it is updated every spring, rookies in the 2023 season have a value of 2.
+
+"""
 
 
 def player_and_team_log_get_answer(model, question):
@@ -527,7 +587,7 @@ def player_and_team_log_get_answer(model, question):
         llm = ChatOpenAI(model='gpt-4o', temperature=0.96)
 
     elif model == 'anthropic':
-        llm = ChatAnthropic(model_name='claude-3-opus-20240229',
+        llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620',
                            )
 
     llm_chain = sql_prompt | llm

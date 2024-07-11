@@ -18,7 +18,7 @@ prompt_template = """
 User:
 
 <instructions>
-Generate a SQL query to answer the following question:
+You are a data analyst for an NFL team and you have been asked to generate a SQL query to answer the following question. You do not have to completely answer the question, just generate the SQL query to answer the question, and the result will be processed. Do your best to answer the question and do not use placeholder information. The question is:
 `{user_question}`
 
 </instructions>
@@ -44,6 +44,19 @@ Only respond with the sql query, no explanation or anything else. Encompass the 
 
 ```
 
+Note, the data only goes back to the 2015 season.
+
+The Season, Week, HomeTeam, AwayTeam, Date, and GameKey columns are only available for scoring plays.
+
+To filter the data for all plays by date, you can use the PlayTime column. The PlayTime column is in the format of 2022-09-11T22:21:49 and is in UTC time.
+
+Scoring plays only count touchdowns, so for extra points, field goals, and safeties you must use other columns to determine if it is a scoring play.
+
+
+Remember, do not use GameKey, SeasonType, ScoringPlayID, Season, Week, AwayTeam, HomeTeam, Date, Sequence_scoring, Team_scoring, Quarter, TimeRemaining, PlayDescription, AwayScore, HomeScore, or ScoreID in your query unless it is a scoring play.
+
+This is a postgreSQL database, so you can use the full range of postgreSQL functions and operators.
+All columns must be surrounded by double quotes, such as "Name" or "Team".
 
 </special_instructions>
 
@@ -58,9 +71,9 @@ Given the database schema, here is the SQL query that answers `{user_question}`:
 <example_response>
 
 ```sql
-SELECT SUM(RushingYards) AS Yards
+SELECT SUM("RushingYards") AS Yards
 FROM playbyplay
-WHERE Season = 2023 AND Name = 'Patrick Mahomes'
+WHERE "Season" = 2023 AND "Name" = 'Patrick Mahomes'
 ```
 
 </example_response>
@@ -69,6 +82,9 @@ WHERE Season = 2023 AND Name = 'Patrick Mahomes'
 
 
 Your response will be executed on a database of NFL Play by Play logs and the answer will be returned to the User, so make sure the query is correct and will return the correct information.
+Also, keep in mind that there are duplicate plays in the database, so you may need to use DISTINCT with the PlayID to get the correct answer. 
+
+Use the attempted and made columns to calculate percentages. For example, if you want to calculate the extra point conversion percentage, you would use ExtraPointsMade and ExtraPointsAttempted.
 
 Assistant: 
 
@@ -81,11 +97,10 @@ sql_prompt = PromptTemplate.from_template(prompt_template)
 testnfl_metadata = """
 Columns in table 'playbyplay':
 PlayID (INTEGER)
-QuarterID (INTEGER)
-QuarterName (TEXT)
+QuarterName (TEXT) - 1, 2, 3, 4, OT
 Sequence (INTEGER)
-TimeRemainingMinutes (INTEGER)
-TimeRemainingSeconds (INTEGER)
+TimeRemainingMinutes (REAL)
+TimeRemainingSeconds (REAL)
 PlayTime (TEXT)
 Updated (TEXT)
 Created (TEXT)
@@ -96,19 +111,18 @@ Distance (INTEGER)
 YardLine (INTEGER)
 YardLineTerritory (TEXT)
 YardsToEndZone (INTEGER)
-Type (TEXT) - Can be one of ['Kickoff', 'Rush', 'PassCompleted', 'PassIncomplete', 'Punt', 'Penalty', 'Timeout', 'FieldGoal', 'Sack', 'ExtraPoint', 'Period','PassIntercepted', 'Fumble', 'TwoPointConversion']
+Type (TEXT) - The Type of Play that occurred (possible values: Rush, PassCompleted, PassIncomplete, PassIntercepted, TwoPointConversion, Punt, Kickoff, FieldGoal, ExtraPoint, Fumble, Penalty, Sack, Timeout, Period)
 YardsGained (INTEGER)
 Description (TEXT)
-IsScoringPlay (INTEGER)
-ScoringPlay (REAL)
+IsScoringPlay (INTEGER) - Only counts for touchdowns.
 PlayStatID (REAL)
 PlayID_playstats (REAL)
 Sequence_playstats (REAL)
 PlayerID (REAL)
-Name (TEXT) - This is Player Name First Name Last Name
+Name (TEXT)
 Team_playstats (TEXT)
 Opponent_playstats (TEXT)
-HomeOrAway (TEXT) - Can be HOME or AWAY
+HomeOrAway (TEXT)  - HOME or AWAY
 Direction (TEXT)
 Updated_playstats (TEXT)
 Created_playstats (TEXT)
@@ -128,11 +142,11 @@ ReceivingYards (REAL)
 ReceivingTouchdowns (REAL)
 Fumbles (REAL)
 FumblesLost (REAL)
-TwoPointConversionAttempts (REAL)
-TwoPointConversionPasses (REAL)
-TwoPointConversionRuns (REAL)
-TwoPointConversionReceptions (REAL)
-TwoPointConversionReturns (REAL)
+TwoPointConversionAttempts (REAL) - The number of times a player attempted a two point conversion
+TwoPointConversionPasses (REAL) - The number of times a player passed for a two point conversion
+TwoPointConversionRuns (REAL) - The number of times a player ran for a two point conversion
+TwoPointConversionReceptions (REAL) - The number of times a player caught a two point conversion
+TwoPointConversionReturns (REAL) - The number of times a player returned a two point conversion
 SoloTackles (REAL)
 AssistedTackles (REAL)
 TacklesForLoss (REAL)
@@ -176,113 +190,22 @@ ExtraPointsMade (REAL)
 ExtraPointsHadBlocked (REAL)
 Penalties (REAL)
 PenaltyYards (REAL)
-ScoringPlay.GameKey (REAL)
-ScoringPlay.SeasonType (REAL) - (1=Regular Season, 2=Preseason, 3=Postseason, 4=Offseason, 5=AllStar).
-ScoringPlay.ScoringPlayID (REAL)
-ScoringPlay.Season (REAL)
-ScoringPlay.Week (REAL) -The week resets for each season type. So the first week of the regular season is 1, the first week of the preseason is 1, etc.
-ScoringPlay.AwayTeam (TEXT)
-ScoringPlay.HomeTeam (TEXT)
-ScoringPlay.Date (TEXT)
-ScoringPlay.Sequence (REAL)
-ScoringPlay.Team (TEXT)
-ScoringPlay.Quarter (TEXT)
-ScoringPlay.TimeRemaining (TEXT)
-ScoringPlay.PlayDescription (TEXT)
-ScoringPlay.AwayScore (REAL)
-ScoringPlay.HomeScore (REAL)
-ScoringPlay.ScoreID (REAL)
-GameKey (REAL)
-SeasonType (REAL) - (1=Regular Season, 2=Preseason, 3=Postseason, 4=Offseason, 5=AllStar).
-ScoringPlayID (REAL)
-Season (REAL)
-Week (REAL) - The week resets for each season type. So the first week of the regular season is 1, the first week of the preseason is 1, etc.
-AwayTeam (TEXT)
-HomeTeam (TEXT)
-Date (TEXT)
-Sequence_scoringplay (REAL)
-Team_scoringplay (TEXT)
-Quarter (TEXT)
-TimeRemaining (TEXT)
-PlayDescription (TEXT)
-AwayScore (REAL)
-HomeScore (REAL)
-ScoreID (REAL)
-PlayStatID_stat (REAL)
-PlayID_stat (REAL)
-Sequence_stat (REAL)
-PlayerID_stat (REAL)
-Name_stat (TEXT)
-Team_stat (TEXT)
-Opponent_stat (TEXT)
-HomeOrAway_stat (TEXT)
-Direction_stat (TEXT)
-Updated_stat (TEXT)
-Created_stat (TEXT)
-PassingAttempts_stat (REAL)
-PassingCompletions_stat (REAL)
-PassingYards_stat (REAL)
-PassingTouchdowns_stat (REAL)
-PassingInterceptions_stat (REAL)
-PassingSacks_stat (REAL)
-PassingSackYards_stat (REAL)
-RushingAttempts_stat (REAL)
-RushingYards_stat (REAL)
-RushingTouchdowns_stat (REAL)
-ReceivingTargets_stat (REAL)
-Receptions_stat (REAL)
-ReceivingYards_stat (REAL)
-ReceivingTouchdowns_stat (REAL)
-Fumbles_stat (REAL)
-FumblesLost_stat (REAL)
-TwoPointConversionAttempts_stat (REAL)
-TwoPointConversionPasses_stat (REAL)
-TwoPointConversionRuns_stat (REAL)
-TwoPointConversionReceptions_stat (REAL)
-TwoPointConversionReturns_stat (REAL)
-SoloTackles_stat (REAL)
-AssistedTackles_stat (REAL)
-TacklesForLoss_stat (REAL)
-Sacks_stat (REAL)
-SackYards_stat (REAL)
-PassesDefended_stat (REAL)
-Safeties_stat (REAL)
-FumblesForced_stat (REAL)
-FumblesRecovered_stat (REAL)
-FumbleReturnYards_stat (REAL)
-FumbleReturnTouchdowns_stat (REAL)
-Interceptions_stat (REAL)
-InterceptionReturnYards_stat (REAL)
-InterceptionReturnTouchdowns_stat (REAL)
-PuntReturns_stat (REAL)
-PuntReturnYards_stat (REAL)
-PuntReturnTouchdowns_stat (REAL)
-KickReturns_stat (REAL)
-KickReturnYards_stat (REAL)
-KickReturnTouchdowns_stat (REAL)
-BlockedKicks_stat (REAL)
-BlockedKickReturns_stat (REAL)
-BlockedKickReturnYards_stat (REAL)
-BlockedKickReturnTouchdowns_stat (REAL)
-FieldGoalReturns_stat (REAL)
-FieldGoalReturnYards_stat (REAL)
-FieldGoalReturnTouchdowns_stat (REAL)
-Kickoffs_stat (REAL)
-KickoffYards_stat (REAL)
-KickoffTouchbacks_stat (REAL)
-Punts_stat (REAL)
-PuntYards_stat (REAL)
-PuntTouchbacks_stat (REAL)
-PuntsHadBlocked_stat (REAL)
-FieldGoalsAttempted_stat (REAL)
-FieldGoalsMade_stat (REAL)
-FieldGoalsYards_stat (REAL)
-FieldGoalsHadBlocked_stat (REAL)
-ExtraPointsAttempted_stat (REAL)
-ExtraPointsMade_stat (REAL)
-ExtraPointsHadBlocked_stat (REAL)
-Penalties_stat (REAL)
-PenaltyYards_stat (REAL)
+GameKey (REAL) - If this is a scoring play, this is the GameKey of the game
+SeasonType (REAL) - If this is a scoring play, this is the SeasonType of the game
+ScoringPlayID (REAL) - If this is a scoring play, this is the PlayID of the scoring play
+Season (REAL) - If this is a scoring play, this is Season of the game
+Week (REAL) - If this is a scoring play, this is the Week of the game
+AwayTeam (TEXT) - If this is a scoring play, this is the AwayTeam of the game
+HomeTeam (TEXT) - If this is a scoring play, this is the HomeTeam of the game
+Date (TEXT) - If this is a scoring play, this is the Date of the game
+Sequence_scoring (REAL) - The order in which the scoring play happened
+Team_scoring (TEXT) - If this is a scoring play, the Team that scored
+Quarter (TEXT) - If this is a scoring play, the Quarter in which the scoring play happened
+TimeRemaining (TEXT) - If this is a scoring play, the Time Remaining in the Quarter when the scoring play happened
+PlayDescription (TEXT) - If this is a scoring play, the PlayDescription of the scoring play
+AwayScore (REAL) - If this is a scoring play, the AwayScore (REAL)
+HomeScore (REAL) - If this is a scoring play, the HomeScore (REAL)
+ScoreID (REAL) - If this is a scoring play, the ScoreID (REAL)
 """
 
 
@@ -292,7 +215,7 @@ def play_by_play_get_answer(model, question):
         llm = ChatOpenAI(model='gpt-4o')
 
     elif model == 'anthropic':
-        llm = ChatAnthropic(model_name='claude-3-opus-20240229')
+        llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620')
 
     llm_chain = sql_prompt | llm
     answer = llm_chain.invoke(

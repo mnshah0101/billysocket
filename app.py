@@ -1,3 +1,7 @@
+
+from gevent import monkey
+monkey.patch_all()
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from utils.question_parser import question_chooser
@@ -9,13 +13,30 @@ from utils.answer_parser import get_answer
 from flask_socketio import SocketIO
 from flask_socketio import send, emit
 from utils.player_and_team import player_and_team_log_get_answer
+from utils.perplexity import ask_expert
+from flask import request
+
+from pymongo import MongoClient
+
 
 
 
 app = Flask(__name__)
 CORS(app) 
 
-socketio = SocketIO(app, cors_allowed_origins='*')
+MONGO_DB_URL = "mongodb+srv://mnshah0101:4Dmf6w9Dv6v66Umm@alpha.nwl3wmb.mongodb.net/?retryWrites=true&w=majority&appName=Alpha"
+
+try:
+    client = MongoClient(MONGO_DB_URL)
+    db = client['chatbot']
+    print("Connected to MongoDB")
+except Exception as e:
+    print("Could not connect to MongoDB", e)
+
+
+socketio = SocketIO(app, cors_allowed_origins='*', async_mode='gevent')
+
+
 
 
 @socketio.on('billy')
@@ -23,23 +44,58 @@ def chat(data):
     if 'message' not in data:
         emit('billy', {'response': 'I am sorry, I do not have an answer for that question.',
              'type': 'query', 'status': 'done'})
+        print('No message or ip or session')
         return
+    
+    print(data)
 
-    message = data['message']
+    ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+
+
+    message = data['message']['message']
+
+    session = data['message']['session']
+
+    print(f'IP: {ip}')
+    print(f'Session: {session}')
 
     
     while True:
         try:
             # Call the question_chooser function to get the bucket and question
-            bucket, question = question_chooser('openai', message)
+            bucket, question = question_chooser('anthropic', message)
 
             print(f'Bucket: {bucket}')
             print(f'Question: {question}')
 
             if bucket == 'NoBucket':
-                emit('billy', {
+                if question == '':
+                    emit('billy', {
                         'response': "I am sorry, I do not have an answer for that question.", 'type': 'answer', 'status': 'done'})
+                    return
+
+                emit('billy', {
+                        'response':question, 'type': 'answer', 'status': 'done'})
                 return
+            
+            if bucket == 'ExpertAnalysis':
+                emit('billy', {'response': '',
+                               'type': 'query', 'status': 'generating'})
+                generator = ask_expert(question)
+                answer = ''
+                generating_answer = True
+                while generating_answer:
+                    try:
+                        next_answer = next(generator)
+                        answer += next_answer
+                        emit('billy', {'response': next_answer,
+                             'type': 'answer', 'status': 'generating'})
+                    except Exception as e:
+                        generating_answer = False
+                        emit('billy', {'response': next_answer,
+                             'type': 'answer', 'status': 'done'})
+                        
+                return answer
 
             raw_query = None
 
@@ -50,7 +106,8 @@ def chat(data):
             elif bucket == 'PlayByPlay':
                 raw_query = play_by_play_get_answer('openai', question)
             elif bucket == 'TeamAndPlayerLog':
-                raw_query = player_and_team_log_get_answer('openai', question)
+                raw_query = player_and_team_log_get_answer(
+                    'openai', question)
 
             # Extract the SQL query from the raw_query
             query = extract_sql_query(raw_query)
@@ -82,8 +139,22 @@ def chat(data):
                  'type': 'answer', 'status': 'generating'})
         except Exception as e:
             answerGenerating = False
+
+            try:
+
+                collection = db['correct']
+                collection.insert_one(
+                    {"question": question, "query": query, "answer": answer_string, "ip": ip, "session": session})
+            except Exception as e:
+                print("Could not insert into MongoDB", e)
+
+
+
             emit('billy', {'response': answer_string,
                  'type': 'answer', 'status': 'done'})
+            
+
+
     return answer_string
 
 
@@ -114,13 +185,14 @@ def chat_http(data):
             raw_query = None
 
             if bucket == 'TeamGameLog':
-                raw_query = team_log_get_answer('openai', question)
+                raw_query = team_log_get_answer('anthropic', question)
             elif bucket == 'PlayerGameLog':
-                raw_query = player_log_get_answer('openai', question)
+                raw_query = player_log_get_answer('anthropic', question)
             elif bucket == 'PlayByPlay':
-                raw_query = play_by_play_get_answer('openai', question)
+                raw_query = play_by_play_get_answer('anthropic', question)
             elif bucket == 'TeamAndPlayerLog':
-                raw_query = player_and_team_log_get_answer('openai', question)
+                raw_query = player_and_team_log_get_answer(
+                    'anthropic', question)
 
             # Extract the SQL query from the raw_query
             query = extract_sql_query(raw_query)
@@ -157,5 +229,8 @@ def chat_http(data):
 
 
 if __name__ == '__main__':
-    app.run(port=8080, debug=True)
+
+    app.run(port=8082, debug=True)
+
+
     socketio.run(app)

@@ -1,17 +1,33 @@
-import sqlite3
 import re
+import dotenv
+import os
+import psycopg2
+
+dotenv.load_dotenv()
+
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 
 def execute_query(query):
 
-    conn = sqlite3.connect('nfl.db')
+    # Connect to the PostgreSQL database
+    conn = psycopg2.connect(DATABASE_URL)
 
+    # Create a cursor
     cur = conn.cursor()
 
-    cur.execute(query)
+    # Execute the query
+    try:
+        cur.execute(query)
+    except Exception as e:
+        print(f'Error: {e}')
+        return "There was an error executing the query."
 
     rows = cur.fetchall()
+
+    cur.close()
     conn.close()
+
     return rows
 
 
