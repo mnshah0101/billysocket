@@ -1,7 +1,3 @@
-
-from gevent import monkey
-monkey.patch_all()
-
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from utils.question_parser import question_chooser
@@ -15,8 +11,11 @@ from flask_socketio import send, emit
 from utils.player_and_team import player_and_team_log_get_answer
 from utils.perplexity import ask_expert
 from flask import request
-
+import dotenv
+import os
 from pymongo import MongoClient
+
+dotenv.load_dotenv()
 
 
 
@@ -24,8 +23,7 @@ from pymongo import MongoClient
 app = Flask(__name__)
 CORS(app) 
 
-MONGO_DB_URL = "mongodb+srv://mnshah0101:4Dmf6w9Dv6v66Umm@alpha.nwl3wmb.mongodb.net/?retryWrites=true&w=majority&appName=Alpha"
-
+MONGO_DB_URL = os.getenv('MONGO_DB_URL')
 try:
     client = MongoClient(MONGO_DB_URL)
     db = client['chatbot']
@@ -34,7 +32,7 @@ except Exception as e:
     print("Could not connect to MongoDB", e)
 
 
-socketio = SocketIO(app, cors_allowed_origins='*', async_mode='gevent')
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 
 
