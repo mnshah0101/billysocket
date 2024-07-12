@@ -55,7 +55,6 @@ Scoring plays only count touchdowns, so for extra points, field goals, and safet
 
 Remember, do not use GameKey, SeasonType, ScoringPlayID, Season, Week, AwayTeam, HomeTeam, Date, Sequence_scoring, Team_scoring, Quarter, TimeRemaining, PlayDescription, AwayScore, HomeScore, or ScoreID in your query unless it is a scoring play.
 
-This is a postgreSQL database, so you can use the full range of postgreSQL functions and operators.
 All columns must be surrounded by double quotes, such as "Name" or "Team".
 
 </special_instructions>

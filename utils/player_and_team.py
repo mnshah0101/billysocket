@@ -65,7 +65,6 @@ Usually, even when a player is out or injured, they will have a record in the da
 
 Be careful of periods in the player name. For example, TJ Watt is T.J. Watt in the database.
 
-This is a postgreSQL database, so you can use the full range of postgreSQL functions and operators.
 All columns must be surrounded by double quotes, such as "Name" or "Team".
 
 
