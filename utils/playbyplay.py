@@ -36,32 +36,36 @@ If the question cannot be answered with the data provided, please return the str
 
 
 <special_instructions>
-The Team is always short hand, such as WAS for Washington or BAL for Baltimore.
-The name of the table is playbyplay. 
-Instead of HomeTeam and AwayTeam, reference the Team column and the HomeOrAway Column, The Opponent column will have the opposite side.
-You will have to infer player names from little data from your understanding of the NFL. For example, if the user only says Kelce, you have to infer the name Travis Kelce
-When looking for specific match ups, look for plays with the same GameKey for the two teams playing each other.
-
-If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided." 
-
-Only respond with the sql query, no explanation or anything else. Encompass the sql query with 
-```sql
-
-```
-
-Note, the data only goes back to the 2015 season.
-
-The Season, Week, HomeTeam, AwayTeam, Date, and GameKey columns are only available for scoring plays.
-
-To filter the data for all plays by date, you can use the PlayTime column. The PlayTime column is in the format of 2022-09-11T22:21:49 and is in UTC time.
-
-Scoring plays only count touchdowns, so for extra points, field goals, and safeties you must use other columns to determine if it is a scoring play.
+- Use the table `playbyplay`.
+- Columns to use for scoring plays: Season, Week, HomeTeam, AwayTeam, Date, and GameKey.
+- Use the `PlayTime` column for filtering all plays by date (format: `YYYY-MM-DDTHH:MM:SS` UTC).
+- Identify players by inferring full names from partial mentions (e.g., "Kelce" implies "Travis Kelce").
+- Use double quotes for column names (e.g., `"RushingYards"`).
+- Avoid using specific columns unless the play is a scoring play: GameKey, SeasonType, ScoringPlayID, Season, Week, AwayTeam, HomeTeam, Date, Sequence_scoring, Team_scoring, Quarter, TimeRemaining, AwayScore, HomeScore, ScoreID.
+- Use `DISTINCT` for `PlayID` to handle duplicate plays.
+- Calculate percentages using attempted and made columns (e.g., `ExtraPointsMade` / `ExtraPointsAttempted`).
+- A way to get WR1 is to look for the player with the most receiving yards in a season for a team.
+- The Season, Week, HomeTeam, AwayTeam, Date, and GameKey columns are only available for scoring plays.
+- To filter the data for all plays by date, you can use the PlayTime column. The PlayTime column is in the format of 2022-09-11T22:21:49 and is in UTC time.
+- Scoring plays only count touchdowns, so for extra points, field goals, and safeties you must use other columns to determine if it is a scoring play.
+- Since you don't have GameKey, you can use Team, nd Date to determine the game.
 
 
 Remember, do not use GameKey, SeasonType, ScoringPlayID, Season, Week, AwayTeam, HomeTeam, Date, Sequence_scoring, Team_scoring, Quarter, TimeRemaining, AwayScore, HomeScore, or ScoreID in your query unless it is a scoring play.
 
 All columns must be surrounded by double quotes, such as
 In the slot means the direction is Middle.
+
+If the question cannot be answered with the provided data, return: "Error: Cannot answer question with data provided."
+
+Respond only with the SQL query, enclosed in:
+
+```sql
+<SQL_QUERY_HERE>
+```
+
+
+Note: The database is a PostgreSQL database, and the data only goes back to the 2015 season.
 
 
 </special_instructions>
