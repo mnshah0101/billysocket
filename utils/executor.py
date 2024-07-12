@@ -49,7 +49,10 @@ def new_sql_query(old_query, error_message, model):
 
 
 
-def execute_query(query):
+def execute_query(query, r =0):
+
+    if r == 5:
+        return 'Error : Cannot not execute query'
 
     # Connect to the PostgreSQL database
     conn = psycopg2.connect(DATABASE_URL)
@@ -62,7 +65,7 @@ def execute_query(query):
         cur.execute(query)
     except Exception as e:
         print(f'Error: {e}. Retrying...')
-        return execute_query(new_sql_query(query, str(e), 'openai'))
+        return execute_query(new_sql_query(query, str(e), 'openai'), r+1)
         
         
 
