@@ -49,7 +49,7 @@ If Cover Margin = 0, it is a push (no winner against the spread).
 
 You can use MIN(GameKey) to get the earliest game and MAX(GameKey) to get the latest game.
 
-Remember, rookies in the 2023 season have a value of 2 in the Experience column.
+Remember, rookies have a value of 2 in the Experience column.
 
 A player is injured if the InjuryStatus is Doubtful, Out, or Questionable.
 
