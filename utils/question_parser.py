@@ -29,6 +29,10 @@ NoBucket - This bucket is for questions that are not about the NFL or cannot be 
 You will also correct the question and make it grammatically correct. Do not change anything else about the question.
 You will response in the following format
 
+
+By the way, the database does not have weather data, just temperature data.
+
+
 Bucket: BucketName
 Question: Corrected Question
 

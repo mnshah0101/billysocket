@@ -61,7 +61,7 @@ A clever way to get the last game of a team is to do MAX(GameKey), which will gi
 This is a postgreSQL database, so you can use the full range of postgreSQL functions and operators.
 All columns must be surrounded by double quotes, such as "Name" or "Team".
 
-
+There is no weather column, so use a combination of temperature, humidity, and wind speed to determine the weather conditions of the game.
 
 </special_instructions>
 

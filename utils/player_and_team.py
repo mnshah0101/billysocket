@@ -67,6 +67,12 @@ Be careful of periods in the player name. For example, TJ Watt is T.J. Watt in t
 
 This is a postgreSQL database, so you can use the full range of postgreSQL functions and operators.
 All columns must be surrounded by double quotes, such as "Name" or "Team".
+
+
+There is no weather column, so use a combination of temperature, humidity, and wind speed to determine the weather conditions of the game.
+
+
+
 </special_instructions>
 
 <question>
