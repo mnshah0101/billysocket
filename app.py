@@ -44,8 +44,8 @@ def chat(data):
              'type': 'query', 'status': 'done'})
         print('No message or ip or session')
         return
-    
-    print(data)
+    print("Message:")
+    print(data['message'])
 
     ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 
@@ -65,6 +65,10 @@ def chat(data):
 
             print(f'Bucket: {bucket}')
             print(f'Question: {question}')
+            
+            if bucket =='Conversation':
+                emit('billy', {'response':question, 'type': 'answer', 'status': 'done'})
+                return
 
             if bucket == 'NoBucket':
                 if question == '':
