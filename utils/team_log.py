@@ -76,6 +76,7 @@ Here is an example response for the question: "Ravens record against the spread 
 
 If the question cannot be answered with the data provided, return the string "cannot be answered".
 
+This is a postgres database. Do not create any new columns or tables. Only use the columns that are in the table.
 
 <example_response>
 
@@ -104,6 +105,9 @@ Use the Wins and Losses columns to determine the number of wins and losses for a
 If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided."
 
 
+Do not use functions that are not available in SQLite. Do not use functions that are not available in SQLite. Do not create new columns, only use what is provided.
+
+
 Assistant: 
 
 """
@@ -112,294 +116,294 @@ Assistant:
 sql_prompt = PromptTemplate.from_template(prompt_template)
 
 
-testnfl_metadata = """GameKey (INTEGER)
-Date (TEXT) - Format: 'YYYY-MM-DDTHH:MM:SS' Remember, this is not a Date type, it is a TEXT type.
-SeasonType (REAL)  - (1=Regular Season, 2=Preseason, 3=Postseason, 4=Offseason, 5=AllStar). The default season type is 1.
-Season (REAL) - The default season is 2023.
-Week (REAL)- The week resets for each season type. The default week is 1. Week 17 is the last week of the regular season.
-Team (TEXT) 
-Opponent (TEXT) - The name of the opponent team.
-HomeOrAway (TEXT) - Could be HOME or AWAY
-Score (REAL)
-OpponentScore (REAL)
-TotalScore (REAL)
-Stadium (TEXT) - This is where the game was played. Games in England were played in Wembley Stadium or Tottenham Hotspur Stadium
-PlayingSurface (TEXT) - Could be Artificial or Grass
-Temperature (REAL)
-Humidity (REAL)
-WindSpeed (REAL)
-OverUnder (REAL) - estimated total points scored in the game. Divide by 2 to get the average points per team.
-PointSpread (REAL)
-ScoreQuarter1 (REAL)
-ScoreQuarter2 (REAL)
-ScoreQuarter3 (REAL)
-ScoreQuarter4 (REAL)
-ScoreOvertime (REAL)
-TimeOfPossessionMinutes (REAL)
-TimeOfPossessionSeconds (REAL)
+testnfl_metadata = """
+GameKey (BIGINT): 
+Date (TEXT): Format: 'YYYY-MM-DDTHH:MM:SS'. Remember, this is not a Date type, it is a TEXT type.
+SeasonType (BIGINT): (1=Regular Season, 2=Preseason, 3=Postseason, 4=Offseason, 5=AllStar). The default season type is 1.
+Season (BIGINT): The default season is 2023.
+Week (BIGINT): The week resets for each season type. The default week is 1. Week 17 is the last week of the regular season.
+Team (TEXT):
+Opponent (TEXT): The name of the opponent team.
+HomeOrAway (TEXT): Could be HOME or AWAY.
+Score (BIGINT):
+OpponentScore (BIGINT):
+TotalScore (BIGINT):
+Stadium (TEXT): This is where the game was played. Games in England were played in Wembley Stadium or Tottenham Hotspur Stadium.
+PlayingSurface (TEXT): Could be Artificial or Grass.
+Temperature (DOUBLE PRECISION):
+Humidity (DOUBLE PRECISION):
+WindSpeed (DOUBLE PRECISION):
+OverUnder (DOUBLE PRECISION): Estimated total points scored in the game. Divide by 2 to get the average points per team.
+PointSpread (DOUBLE PRECISION):
+ScoreQuarter1 (BIGINT):
+ScoreQuarter2 (BIGINT):
+ScoreQuarter3 (BIGINT):
+ScoreQuarter4 (BIGINT):
+ScoreOvertime (BIGINT):
+TimeOfPossessionMinutes (BIGINT):
+TimeOfPossessionSeconds (BIGINT):
 TimeOfPossession (TEXT)
-FirstDowns (REAL)
-FirstDownsByRushing (REAL)
-FirstDownsByPassing (REAL)
-FirstDownsByPenalty (REAL)
-OffensivePlays (REAL)
-OffensiveYards (REAL)
-OffensiveYardsPerPlay (REAL)
-Touchdowns (REAL)
-RushingAttempts (REAL)
-RushingYards (REAL)
-RushingYardsPerAttempt (REAL)
-RushingTouchdowns (REAL)
-PassingAttempts (REAL)
-PassingCompletions (REAL)
-PassingYards (REAL)
-PassingTouchdowns (REAL)
-PassingInterceptions (REAL)
-PassingYardsPerAttempt (REAL)
-PassingYardsPerCompletion (REAL)
-CompletionPercentage (REAL)
-PasserRating (REAL)
-ThirdDownAttempts (REAL)
-ThirdDownConversions (REAL)
-ThirdDownPercentage (REAL)
-FourthDownAttempts (REAL)
-FourthDownConversions (REAL)
-FourthDownPercentage (REAL)
-RedZoneAttempts (REAL)
-RedZoneConversions (REAL)
-GoalToGoAttempts (REAL)
-GoalToGoConversions (REAL)
-ReturnYards (REAL)
-Penalties (REAL)
-PenaltyYards (REAL)
-Fumbles (REAL)
-FumblesLost (REAL)
-TimesSacked (REAL)
-TimesSackedYards (REAL)
-QuarterbackHits (REAL)
-TacklesForLoss (REAL)
-Safeties (REAL)
-Punts (REAL)
-PuntYards (REAL)
-PuntAverage (REAL)
-Giveaways (REAL)
-Takeaways (REAL)
-TurnoverDifferential (REAL)
-OpponentScoreQuarter1 (REAL)
-OpponentScoreQuarter2 (REAL)
-OpponentScoreQuarter3 (REAL)
-OpponentScoreQuarter4 (REAL)
-OpponentScoreOvertime (REAL)
-OpponentTimeOfPossessionMinutes (REAL)
-OpponentTimeOfPossessionSeconds (REAL)
+FirstDowns (BIGINT):
+FirstDownsByRushing (DOUBLE PRECISION):
+FirstDownsByPassing (DOUBLE PRECISION):
+FirstDownsByPenalty (DOUBLE PRECISION):
+OffensivePlays (BIGINT):
+OffensiveYards (BIGINT):
+OffensiveYardsPerPlay (DOUBLE PRECISION):
+Touchdowns (DOUBLE PRECISION):
+RushingAttempts (BIGINT):
+RushingYards (BIGINT):
+RushingYardsPerAttempt (DOUBLE PRECISION):
+RushingTouchdowns (DOUBLE PRECISION):
+PassingAttempts (BIGINT):
+PassingCompletions (BIGINT):
+PassingYards (BIGINT):
+PassingTouchdowns (DOUBLE PRECISION):
+PassingInterceptions (BIGINT):
+PassingYardsPerAttempt (DOUBLE PRECISION):
+PassingYardsPerCompletion (DOUBLE PRECISION):
+CompletionPercentage (DOUBLE PRECISION):
+PasserRating (DOUBLE PRECISION):
+ThirdDownAttempts (DOUBLE PRECISION):
+ThirdDownConversions (DOUBLE PRECISION):
+ThirdDownPercentage (DOUBLE PRECISION):
+FourthDownAttempts (DOUBLE PRECISION):
+FourthDownConversions (DOUBLE PRECISION):
+FourthDownPercentage (DOUBLE PRECISION):
+RedZoneAttempts (DOUBLE PRECISION):
+RedZoneConversions (DOUBLE PRECISION):
+GoalToGoAttempts (DOUBLE PRECISION):
+GoalToGoConversions (DOUBLE PRECISION):
+ReturnYards (BIGINT):
+Penalties (BIGINT):
+PenaltyYards (BIGINT):
+Fumbles (BIGINT):
+FumblesLost (BIGINT):
+TimesSacked (BIGINT):
+TimesSackedYards (BIGINT):
+QuarterbackHits (DOUBLE PRECISION):
+TacklesForLoss (DOUBLE PRECISION):
+Safeties (DOUBLE PRECISION):
+Punts (BIGINT):
+PuntYards (BIGINT):
+PuntAverage (DOUBLE PRECISION):
+Giveaways (BIGINT):
+Takeaways (BIGINT):
+TurnoverDifferential (BIGINT):
+OpponentScoreQuarter1 (BIGINT):
+OpponentScoreQuarter2 (BIGINT):
+OpponentScoreQuarter3 (BIGINT):
+OpponentScoreQuarter4 (BIGINT):
+OpponentScoreOvertime (BIGINT):
+OpponentTimeOfPossessionMinutes (BIGINT):
+OpponentTimeOfPossessionSeconds (BIGINT):
 OpponentTimeOfPossession (TEXT)
-OpponentFirstDowns (REAL)
-OpponentFirstDownsByRushing (REAL)
-OpponentFirstDownsByPassing (REAL)
-OpponentFirstDownsByPenalty (REAL)
-OpponentOffensivePlays (REAL)
-OpponentOffensiveYards (REAL)
-OpponentOffensiveYardsPerPlay (REAL)
-OpponentTouchdowns (REAL)
-OpponentRushingAttempts (REAL)
-OpponentRushingYards (REAL)
-OpponentRushingYardsPerAttempt (REAL)
-OpponentRushingTouchdowns (REAL)
-OpponentPassingAttempts (REAL)
-OpponentPassingCompletions (REAL)
-OpponentPassingYards (REAL)
-OpponentPassingTouchdowns (REAL)
-OpponentPassingInterceptions (REAL)
-OpponentPassingYardsPerAttempt (REAL)
-OpponentPassingYardsPerCompletion (REAL)
-OpponentCompletionPercentage (REAL)
-OpponentPasserRating (REAL)
-OpponentThirdDownAttempts (REAL)
-OpponentThirdDownConversions (REAL)
-OpponentThirdDownPercentage (REAL)
-OpponentFourthDownAttempts (REAL)
-OpponentFourthDownConversions (REAL)
-OpponentFourthDownPercentage (REAL)
-OpponentRedZoneAttempts (REAL)
-OpponentRedZoneConversions (REAL)
-OpponentGoalToGoAttempts (REAL)
-OpponentGoalToGoConversions (REAL)
-OpponentReturnYards (REAL)
-OpponentPenalties (REAL)
-OpponentPenaltyYards (REAL)
-OpponentFumbles (REAL)
-OpponentFumblesLost (REAL)
-OpponentTimesSacked (REAL)
-OpponentTimesSackedYards (REAL)
-OpponentQuarterbackHits (REAL)
-OpponentTacklesForLoss (REAL)
-OpponentSafeties (REAL)
-OpponentPunts (REAL)
-OpponentPuntYards (REAL)
-OpponentPuntAverage (REAL)
-OpponentGiveaways (REAL)
-OpponentTakeaways (REAL)
-OpponentTurnoverDifferential (REAL)
-RedZonePercentage (REAL)
-GoalToGoPercentage (REAL)
-QuarterbackHitsDifferential (REAL)
-TacklesForLossDifferential (REAL)
-QuarterbackSacksDifferential (REAL)
-TacklesForLossPercentage (REAL)
-QuarterbackHitsPercentage (REAL)
-TimesSackedPercentage (REAL)
-OpponentRedZonePercentage (REAL)
-OpponentGoalToGoPercentage (REAL)
-OpponentQuarterbackHitsDifferential (REAL)
-OpponentTacklesForLossDifferential (REAL)
-OpponentQuarterbackSacksDifferential (REAL)
-OpponentTacklesForLossPercentage (REAL)
-OpponentQuarterbackHitsPercentage (REAL)
-OpponentTimesSackedPercentage (REAL)
-Kickoffs (REAL)
-KickoffsInEndZone (REAL)
-KickoffTouchbacks (REAL)
-PuntsHadBlocked (REAL)
-PuntNetAverage (REAL)
-ExtraPointKickingAttempts (REAL) 
-ExtraPointKickingConversions (REAL)
-ExtraPointsHadBlocked (REAL)
-ExtraPointPassingAttempts (REAL) 
-ExtraPointPassingConversions (REAL) 
-ExtraPointRushingAttempts (REAL)
-ExtraPointRushingConversions (REAL)
-FieldGoalAttempts (REAL)
-FieldGoalsMade (REAL)
-FieldGoalsHadBlocked (REAL)
-PuntReturns (REAL)
-PuntReturnYards (REAL)
-KickReturns (REAL)
-KickReturnYards (REAL)
-InterceptionReturns (REAL)
-InterceptionReturnYards (REAL)
-OpponentKickoffs (REAL)
-OpponentKickoffsInEndZone (REAL)
-OpponentKickoffTouchbacks (REAL)
-OpponentPuntsHadBlocked (REAL)
-OpponentPuntNetAverage (REAL)
-OpponentExtraPointKickingAttempts (REAL) 
-OpponentExtraPointKickingConversions (REAL)
-OpponentExtraPointsHadBlocked (REAL)
-OpponentExtraPointPassingAttempts (REAL)
-OpponentExtraPointPassingConversions (REAL)
-OpponentExtraPointRushingAttempts (REAL)
-OpponentExtraPointRushingConversions (REAL)
-OpponentFieldGoalAttempts (REAL)
-OpponentFieldGoalsMade (REAL)
-OpponentFieldGoalsHadBlocked (REAL)
-OpponentPuntReturns (REAL)
-OpponentPuntReturnYards (REAL)
-OpponentKickReturns (REAL)
-OpponentKickReturnYards (REAL)
-OpponentInterceptionReturns (REAL)
-OpponentInterceptionReturnYards (REAL)
-SoloTackles (REAL)
-AssistedTackles (REAL)
-Sacks (REAL)
-SackYards (REAL)
-PassesDefended (REAL)
-FumblesForced (REAL)
-FumblesRecovered (REAL)
-FumbleReturnYards (REAL)
-FumbleReturnTouchdowns (REAL)
-InterceptionReturnTouchdowns (REAL)
-BlockedKicks (REAL)
-PuntReturnTouchdowns (REAL)
-PuntReturnLong (REAL)
-KickReturnTouchdowns (REAL)
-KickReturnLong (REAL)
-BlockedKickReturnYards (REAL)
-BlockedKickReturnTouchdowns (REAL)
-FieldGoalReturnYards (REAL)
-FieldGoalReturnTouchdowns (REAL)
-PuntNetYards (REAL)
-OpponentSoloTackles (REAL)
-OpponentAssistedTackles (REAL)
-OpponentSacks (REAL)
-OpponentSackYards (REAL)
-OpponentPassesDefended (REAL)
-OpponentFumblesForced (REAL)
-OpponentFumblesRecovered (REAL)
-OpponentFumbleReturnYards (REAL)
-OpponentFumbleReturnTouchdowns (REAL)
-OpponentInterceptionReturnTouchdowns (REAL)
-OpponentBlockedKicks (REAL)
-OpponentPuntReturnTouchdowns (REAL)
-OpponentPuntReturnLong (REAL)
-OpponentKickReturnTouchdowns (REAL)
-OpponentKickReturnLong (REAL)
-OpponentBlockedKickReturnYards (REAL)
-OpponentBlockedKickReturnTouchdowns (REAL)
-OpponentFieldGoalReturnYards (REAL)
-OpponentFieldGoalReturnTouchdowns (REAL)
-OpponentPuntNetYards (REAL)
-IsGameOver (INTEGER)
-TeamName (TEXT)
-DayOfWeek (TEXT)
-PassingDropbacks (REAL)
-OpponentPassingDropbacks (REAL)
-TeamGameID (REAL)
-TwoPointConversionReturns (REAL)
-OpponentTwoPointConversionReturns (REAL)
-TeamID (REAL)
-OpponentID (REAL)
-Day (TEXT)
-DateTime (TEXT) - Looks like 2024-01-15T20:15:00
-GlobalGameID (REAL)
-GlobalTeamID (REAL)
-GlobalOpponentID (REAL)
-ScoreID (REAL)
-outer_key (INTEGER)
-HomeConference (TEXT) - Can be AFC or NFC
-HomeDivision (TEXT) - Can be North, East, West, South
-HomeFullName (TEXT)
-HomeOffensiveScheme (TEXT) -   (3-4, 4-3)
-HomeDefensiveScheme (TEXT) - (PRO, 2TE, 3WR)
-HomeCity (TEXT)
-HomeStadiumDetails (TEXT) - A map that looks like "{'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'}"
-HomeHeadCoach (TEXT)
-AwayConference (TEXT) - Can be AFC or NFC
-AwayDivision (TEXT) - Can be North, South, East, or West
-AwayFullName (TEXT)
-AwayOffensiveScheme (TEXT) - (PRO, 2TE, 3WR
-AwayDefensiveScheme (TEXT) - (3-4, 4-3)
-AwayCity (TEXT)
-AwayStadiumDetails (TEXT) - A map that looks like "{'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'}"
-AwayHeadCoach (TEXT)
-HomeOffensiveCoordinator (TEXT)
-HomeDefensiveCoordinator (TEXT)
-HomeSpecialTeamsCoach (TEXT)
-AwayOffensiveCoordinator (TEXT)
-AwayDefensiveCoordinator (TEXT)
-AWaySpecialTeamsCoach (TEXT)
-Wins (REAL) - These are the wins up to the current game. They reset each season and each season type.
-Losses (REAL) - These are the losses up to the current game. They reset each season and each season type.
-OpponentWins (REAL) - These are the opponent's wins up to the current game. They reset each season and each season type.
-OpponentLosses (REAL) - These are the opponent's losses up to the current game. They reset each season and each season type.
-StadiumID (INTEGER)
-Name (TEXT) - Home team Stadium Name
-City (TEXT) - Home team  City
-State (TEXT) - Home team state State
-Country (TEXT) - Home team Country
-Capacity (INTEGER) - Home team stadium Capacity
-PlayingSurface.1 (TEXT) - Home team stadium PlayingSurface
-GeoLat (REAL) - Home team Latitude
-GeoLong (REAL) - Home team Longitude
-Type (TEXT) - Home team type of stadium (Outdoor or Indoor)
-IsShortWeek (INTEGER) - 1 if the team is playing on a short week, 0 if not
-
+OpponentFirstDowns (BIGINT):
+OpponentFirstDownsByRushing (DOUBLE PRECISION):
+OpponentFirstDownsByPassing (DOUBLE PRECISION):
+OpponentFirstDownsByPenalty (DOUBLE PRECISION):
+OpponentOffensivePlays (BIGINT):
+OpponentOffensiveYards (BIGINT):
+OpponentOffensiveYardsPerPlay (DOUBLE PRECISION):
+OpponentTouchdowns (DOUBLE PRECISION):
+OpponentRushingAttempts (BIGINT):
+OpponentRushingYards (BIGINT):
+OpponentRushingYardsPerAttempt (DOUBLE PRECISION):
+OpponentRushingTouchdowns (DOUBLE PRECISION):
+OpponentPassingAttempts (BIGINT):
+OpponentPassingCompletions (BIGINT):
+OpponentPassingYards (BIGINT):
+OpponentPassingTouchdowns (DOUBLE PRECISION):
+OpponentPassingInterceptions (BIGINT):
+OpponentPassingYardsPerAttempt (DOUBLE PRECISION):
+OpponentPassingYardsPerCompletion (DOUBLE PRECISION):
+OpponentCompletionPercentage (DOUBLE PRECISION):
+OpponentPasserRating (DOUBLE PRECISION):
+OpponentThirdDownAttempts (DOUBLE PRECISION):
+OpponentThirdDownConversions (DOUBLE PRECISION):
+OpponentThirdDownPercentage (DOUBLE PRECISION):
+OpponentFourthDownAttempts (DOUBLE PRECISION):
+OpponentFourthDownConversions (DOUBLE PRECISION):
+OpponentFourthDownPercentage (DOUBLE PRECISION):
+OpponentRedZoneAttempts (DOUBLE PRECISION):
+OpponentRedZoneConversions (DOUBLE PRECISION):
+OpponentGoalToGoAttempts (DOUBLE PRECISION):
+OpponentGoalToGoConversions (DOUBLE PRECISION):
+OpponentReturnYards (BIGINT):
+OpponentPenalties (BIGINT):
+OpponentPenaltyYards (BIGINT):
+OpponentFumbles (BIGINT):
+OpponentFumblesLost (BIGINT):
+OpponentTimesSacked (BIGINT):
+OpponentTimesSackedYards (BIGINT):
+OpponentQuarterbackHits (DOUBLE PRECISION):
+OpponentTacklesForLoss (DOUBLE PRECISION):
+OpponentSafeties (DOUBLE PRECISION):
+OpponentPunts (BIGINT):
+OpponentPuntYards (BIGINT):
+OpponentPuntAverage (DOUBLE PRECISION):
+OpponentGiveaways (BIGINT):
+OpponentTakeaways (BIGINT):
+OpponentTurnoverDifferential (BIGINT):
+RedZonePercentage (DOUBLE PRECISION):
+GoalToGoPercentage (DOUBLE PRECISION):
+QuarterbackHitsDifferential (BIGINT):
+TacklesForLossDifferential (BIGINT):
+QuarterbackSacksDifferential (BIGINT):
+TacklesForLossPercentage (DOUBLE PRECISION):
+QuarterbackHitsPercentage (DOUBLE PRECISION):
+TimesSackedPercentage (DOUBLE PRECISION):
+OpponentRedZonePercentage (DOUBLE PRECISION):
+OpponentGoalToGoPercentage (DOUBLE PRECISION):
+OpponentQuarterbackHitsDifferential (BIGINT):
+OpponentTacklesForLossDifferential (BIGINT):
+OpponentQuarterbackSacksDifferential (BIGINT):
+OpponentTacklesForLossPercentage (DOUBLE PRECISION):
+OpponentQuarterbackHitsPercentage (DOUBLE PRECISION):
+OpponentTimesSackedPercentage (DOUBLE PRECISION):
+Kickoffs (DOUBLE PRECISION):
+KickoffsInEndZone (DOUBLE PRECISION):
+KickoffTouchbacks (DOUBLE PRECISION):
+PuntsHadBlocked (DOUBLE PRECISION):
+PuntNetAverage (DOUBLE PRECISION):
+ExtraPointKickingAttempts (DOUBLE PRECISION):
+ExtraPointKickingConversions (DOUBLE PRECISION):
+ExtraPointsHadBlocked (DOUBLE PRECISION):
+ExtraPointPassingAttempts (DOUBLE PRECISION):
+ExtraPointPassingConversions (DOUBLE PRECISION):
+ExtraPointRushingAttempts (DOUBLE PRECISION):
+ExtraPointRushingConversions (DOUBLE PRECISION):
+FieldGoalAttempts (DOUBLE PRECISION):
+FieldGoalsMade (DOUBLE PRECISION):
+FieldGoalsHadBlocked (DOUBLE PRECISION):
+PuntReturns (DOUBLE PRECISION):
+PuntReturnYards (DOUBLE PRECISION):
+KickReturns (DOUBLE PRECISION):
+KickReturnYards (DOUBLE PRECISION):
+InterceptionReturns (DOUBLE PRECISION):
+InterceptionReturnYards (DOUBLE PRECISION):
+OpponentKickoffs (DOUBLE PRECISION):
+OpponentKickoffsInEndZone (DOUBLE PRECISION):
+OpponentKickoffTouchbacks (DOUBLE PRECISION):
+OpponentPuntsHadBlocked (DOUBLE PRECISION):
+OpponentPuntNetAverage (DOUBLE PRECISION):
+OpponentExtraPointKickingAttempts (DOUBLE PRECISION):
+OpponentExtraPointKickingConversions (DOUBLE PRECISION):
+OpponentExtraPointsHadBlocked (DOUBLE PRECISION):
+OpponentExtraPointPassingAttempts (DOUBLE PRECISION):
+OpponentExtraPointPassingConversions (DOUBLE PRECISION):
+OpponentExtraPointRushingAttempts (DOUBLE PRECISION):
+OpponentExtraPointRushingConversions (DOUBLE PRECISION):
+OpponentFieldGoalAttempts (DOUBLE PRECISION):
+OpponentFieldGoalsMade (DOUBLE PRECISION):
+OpponentFieldGoalsHadBlocked (DOUBLE PRECISION):
+OpponentPuntReturns (DOUBLE PRECISION):
+OpponentPuntReturnYards (DOUBLE PRECISION):
+OpponentKickReturns (DOUBLE PRECISION):
+OpponentKickReturnYards (DOUBLE PRECISION):
+OpponentInterceptionReturns (DOUBLE PRECISION):
+OpponentInterceptionReturnYards (DOUBLE PRECISION):
+SoloTackles (DOUBLE PRECISION):
+AssistedTackles (DOUBLE PRECISION):
+Sacks (DOUBLE PRECISION):
+SackYards (DOUBLE PRECISION):
+PassesDefended (DOUBLE PRECISION):
+FumblesForced (DOUBLE PRECISION):
+FumblesRecovered (DOUBLE PRECISION):
+FumbleReturnYards (DOUBLE PRECISION):
+FumbleReturnTouchdowns (DOUBLE PRECISION):
+InterceptionReturnTouchdowns (DOUBLE PRECISION):
+BlockedKicks (DOUBLE PRECISION):
+PuntReturnTouchdowns (DOUBLE PRECISION):
+PuntReturnLong (DOUBLE PRECISION):
+KickReturnTouchdowns (DOUBLE PRECISION):
+KickReturnLong (DOUBLE PRECISION):
+BlockedKickReturnYards (DOUBLE PRECISION):
+BlockedKickReturnTouchdowns (DOUBLE PRECISION):
+FieldGoalReturnYards (DOUBLE PRECISION):
+FieldGoalReturnTouchdowns (DOUBLE PRECISION):
+PuntNetYards (DOUBLE PRECISION):
+OpponentSoloTackles (DOUBLE PRECISION):
+OpponentAssistedTackles (DOUBLE PRECISION):
+OpponentSacks (DOUBLE PRECISION):
+OpponentSackYards (DOUBLE PRECISION):
+OpponentPassesDefended (DOUBLE PRECISION):
+OpponentFumblesForced (DOUBLE PRECISION):
+OpponentFumblesRecovered (DOUBLE PRECISION):
+OpponentFumbleReturnYards (DOUBLE PRECISION):
+OpponentFumbleReturnTouchdowns (DOUBLE PRECISION):
+OpponentInterceptionReturnTouchdowns (DOUBLE PRECISION):
+OpponentBlockedKicks (DOUBLE PRECISION):
+OpponentPuntReturnTouchdowns (DOUBLE PRECISION):
+OpponentPuntReturnLong (DOUBLE PRECISION):
+OpponentKickReturnTouchdowns (DOUBLE PRECISION):
+OpponentKickReturnLong (DOUBLE PRECISION):
+OpponentBlockedKickReturnYards (DOUBLE PRECISION):
+OpponentBlockedKickReturnTouchdowns (DOUBLE PRECISION):
+OpponentFieldGoalReturnYards (DOUBLE PRECISION):
+OpponentFieldGoalReturnTouchdowns (DOUBLE PRECISION):
+OpponentPuntNetYards (DOUBLE PRECISION):
+IsGameOver (BIGINT):
+TeamName (TEXT):
+DayOfWeek (TEXT):
+PassingDropbacks (BIGINT):
+OpponentPassingDropbacks (BIGINT):
+TeamGameID (BIGINT):
+TwoPointConversionReturns (BIGINT):
+OpponentTwoPointConversionReturns (BIGINT):
+TeamID (BIGINT):
+OpponentID (BIGINT):
+Day (TEXT):
+DateTime (TEXT): Looks like 2024-01-15T20:15:00
+GlobalGameID (BIGINT):
+GlobalTeamID (BIGINT):
+GlobalOpponentID (BIGINT):
+ScoreID (BIGINT):
+outer_key (TEXT):
+HomeConference (TEXT): Can be AFC or NFC.
+HomeDivision (TEXT): Can be North, East, West, South.
+HomeFullName (TEXT):
+HomeOffensiveScheme (TEXT): (3-4, 4-3).
+HomeDefensiveScheme (TEXT): (PRO, 2TE, 3WR).
+HomeCity (TEXT):
+HomeStadiumDetails (TEXT): A map that looks like "{'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'}".
+HomeHeadCoach (TEXT):
+AwayConference (TEXT): Can be AFC or NFC.
+AwayDivision (TEXT): Can be North, South, East, or West.
+AwayFullName (TEXT):
+AwayOffensiveScheme (TEXT): (PRO, 2TE, 3WR).
+AwayDefensiveScheme (TEXT): (3-4, 4-3).
+AwayCity (TEXT):
+AwayStadiumDetails (TEXT): A map that looks like "{'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'}".
+AwayHeadCoach (TEXT):
+HomeOffensiveCoordinator (TEXT):
+HomeDefensiveCoordinator (TEXT):
+HomeSpecialTeamsCoach (TEXT):
+AwayOffensiveCoordinator (TEXT):
+AwayDefensiveCoordinator (TEXT):
+AwaySpecialTeamsCoach (TEXT):
+Wins (BIGINT): These are the wins up to the current game. They reset each season and each season type.
+Losses (BIGINT): These are the losses up to the current game. They reset each season and each season type.
+OpponentWins (BIGINT): These are the opponent's wins up to the current game. They reset each season and each season type.
+OpponentLosses (BIGINT): These are the opponent's losses up to the current game. They reset each season and each season type.
+StadiumID (BIGINT):
+Name (TEXT): Home team Stadium Name.
+City (TEXT): Home team City.
+State (TEXT): Home team State.
+Country (TEXT): Home team Country.
+Capacity (BIGINT): Home team stadium Capacity.
+PlayingSurface (TEXT): Home team stadium PlayingSurface.
+GeoLat (DOUBLE PRECISION): Home team Latitude.
+GeoLong (DOUBLE PRECISION): Home team Longitude.
+Type (TEXT): Home team type of stadium (Outdoor or Indoor).
+IsShortWeek (BIGINT): 1 if the team is playing on a short week, 0 if not.
 """
 
 
 def team_log_get_answer(model, question):
     llm = None
     if model == 'openai':
-        llm = ChatOpenAI(model='gpt-4o', temperature=0.8)
+        llm = ChatOpenAI(model='gpt-4o', temperature=0.9)
 
     elif model == 'anthropic':
         llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620')

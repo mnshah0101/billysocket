@@ -102,14 +102,14 @@ def chat(data):
             raw_query = None
 
             if bucket == 'TeamGameLog':
-                raw_query = team_log_get_answer('openai', question)
+                raw_query = team_log_get_answer('anthropic', question)
             elif bucket == 'PlayerGameLog':
-                raw_query = player_log_get_answer('openai', question)
+                raw_query = player_log_get_answer('anthropic', question)
             elif bucket == 'PlayByPlay':
-                raw_query = play_by_play_get_answer('openai', question)
+                raw_query = play_by_play_get_answer('anthropic', question)
             elif bucket == 'TeamAndPlayerLog':
                 raw_query = player_and_team_log_get_answer(
-                    'openai', question)
+                    'anthropic', question)
             
             print(f'Raw Query: {raw_query}')
                 

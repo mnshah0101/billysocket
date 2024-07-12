@@ -95,6 +95,7 @@ Use the attempted and made columns to calculate percentages. For example, if you
 
 If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided." 
 
+This is a postgres database. Do not create any new columns or tables. Only use the columns that are in the table.
 
 Assistant: 
 
@@ -106,121 +107,121 @@ sql_prompt = PromptTemplate.from_template(prompt_template)
 
 testnfl_metadata = """
 Columns in table 'playbyplay':
-PlayID (INTEGER)
-QuarterName (TEXT) - 1, 2, 3, 4, OT
-Sequence (INTEGER)
-TimeRemainingMinutes (REAL)
-TimeRemainingSeconds (REAL)
-PlayTime (TEXT)
-Updated (TEXT)
-Created (TEXT)
-Team (TEXT)
-Opponent (TEXT)
-Down (INTEGER)
-Distance (INTEGER)
-YardLine (INTEGER)
-YardLineTerritory (TEXT)
-YardsToEndZone (INTEGER)
-Type (TEXT) - The Type of Play that occurred (possible values: Rush, PassCompleted, PassIncomplete, PassIntercepted, TwoPointConversion, Punt, Kickoff, FieldGoal, ExtraPoint, Fumble, Penalty, Sack, Timeout, Period)
-YardsGained (INTEGER)
-IsScoringPlay (INTEGER) - Only counts for touchdowns.
-PlayStatID (REAL)
-PlayID_playstats (REAL)
-Sequence_playstats (REAL)
-PlayerID (REAL)
-Name (TEXT)
-Team_playstats (TEXT)
-Opponent_playstats (TEXT)
-HomeOrAway (TEXT)  - HOME or AWAY
-Direction (TEXT) - The direction of the play (possible values: Left, Middle, Right)
-Updated_playstats (TEXT)
-Created_playstats (TEXT)
-PassingAttempts (REAL)
-PassingCompletions (REAL)
-PassingYards (REAL)
-PassingTouchdowns (REAL)
-PassingInterceptions (REAL)
-PassingSacks (REAL)
-PassingSackYards (REAL)
-RushingAttempts (REAL)
-RushingYards (REAL)
-RushingTouchdowns (REAL)
-ReceivingTargets (REAL)
-Receptions (REAL)
-ReceivingYards (REAL)
-ReceivingTouchdowns (REAL)
-Fumbles (REAL)
-FumblesLost (REAL)
-TwoPointConversionAttempts (REAL) - The number of times a player attempted a two point conversion
-TwoPointConversionPasses (REAL) - The number of times a player passed for a two point conversion
-TwoPointConversionRuns (REAL) - The number of times a player ran for a two point conversion
-TwoPointConversionReceptions (REAL) - The number of times a player caught a two point conversion
-TwoPointConversionReturns (REAL) - The number of times a player returned a two point conversion
-SoloTackles (REAL)
-AssistedTackles (REAL)
-TacklesForLoss (REAL)
-Sacks (REAL)
-SackYards (REAL)
-PassesDefended (REAL)
-Safeties (REAL)
-FumblesForced (REAL)
-FumblesRecovered (REAL)
-FumbleReturnYards (REAL)
-FumbleReturnTouchdowns (REAL)
-Interceptions (REAL)
-InterceptionReturnYards (REAL)
-InterceptionReturnTouchdowns (REAL)
-PuntReturns (REAL)
-PuntReturnYards (REAL)
-PuntReturnTouchdowns (REAL)
-KickReturns (REAL)
-KickReturnYards (REAL)
-KickReturnTouchdowns (REAL)
-BlockedKicks (REAL)
-BlockedKickReturns (REAL)
-BlockedKickReturnYards (REAL)
-BlockedKickReturnTouchdowns (REAL)
-FieldGoalReturns (REAL)
-FieldGoalReturnYards (REAL)
-FieldGoalReturnTouchdowns (REAL)
-Kickoffs (REAL)
-KickoffYards (REAL)
-KickoffTouchbacks (REAL)
-Punts (REAL)
-PuntYards (REAL)
-PuntTouchbacks (REAL)
-PuntsHadBlocked (REAL)
-FieldGoalsAttempted (REAL)
-FieldGoalsMade (REAL)
-FieldGoalsYards (REAL)
-FieldGoalsHadBlocked (REAL)
-ExtraPointsAttempted (REAL)
-ExtraPointsMade (REAL)
-ExtraPointsHadBlocked (REAL)
-Penalties (REAL)
-PenaltyYards (REAL)
-GameKey (REAL) - If this is a scoring play, this is the GameKey of the game
-SeasonType (REAL) - If this is a scoring play, this is the SeasonType of the game
-ScoringPlayID (REAL) - If this is a scoring play, this is the PlayID of the scoring play
-Season (REAL) - If this is a scoring play, this is Season of the game
-Week (REAL) - If this is a scoring play, this is the Week of the game
-AwayTeam (TEXT) - If this is a scoring play, this is the AwayTeam of the game
-HomeTeam (TEXT) - If this is a scoring play, this is the HomeTeam of the game
-Date (TEXT) - If this is a scoring play, this is the Date of the game
-Sequence_scoring (REAL) - The order in which the scoring play happened
-Team_scoring (TEXT) - If this is a scoring play, the Team that scored
-Quarter (TEXT) - If this is a scoring play, the Quarter in which the scoring play happened
-TimeRemaining (TEXT) - If this is a scoring play, the Time Remaining in the Quarter when the scoring play happened
-AwayScore (REAL) - If this is a scoring play, the AwayScore (REAL)
-HomeScore (REAL) - If this is a scoring play, the HomeScore (REAL)
-ScoreID (REAL) - If this is a scoring play, the ScoreID (REAL)
+PlayID (bigint)
+QuarterName (text) - 1, 2, 3, 4, OT
+Sequence (bigint)
+TimeRemainingMinutes (double precision)
+TimeRemainingSeconds (double precision)
+PlayTime (text)
+Updated (text)
+Created (text)
+Team (text)
+Opponent (text)
+Down (bigint)
+Distance (bigint)
+YardLine (bigint)
+YardLineTerritory (text)
+YardsToEndZone (bigint)
+Type (text) - The Type of Play that occurred (possible values: Rush, PassCompleted, PassIncomplete, PassIntercepted, TwoPointConversion, Punt, Kickoff, FieldGoal, ExtraPoint, Fumble, Penalty, Sack, Timeout, Period)
+YardsGained (bigint)
+IsScoringPlay (bigint) - Only counts for touchdowns.
+PlayStatID (double precision)
+PlayID_playstats (double precision)
+Sequence_playstats (double precision)
+PlayerID (double precision)
+Name (text)
+Team_playstats (text)
+Opponent_playstats (text)
+HomeOrAway (text)  - HOME or AWAY
+Direction (text) - The direction of the play (possible values: Left, Middle, Right)
+Updated_playstats (text)
+Created_playstats (text)
+PassingAttempts (double precision)
+PassingCompletions (double precision)
+PassingYards (double precision)
+PassingTouchdowns (double precision)
+PassingInterceptions (double precision)
+PassingSacks (double precision)
+PassingSackYards (double precision)
+RushingAttempts (double precision)
+RushingYards (double precision)
+RushingTouchdowns (double precision)
+ReceivingTargets (double precision)
+Receptions (double precision)
+ReceivingYards (double precision)
+ReceivingTouchdowns (double precision)
+Fumbles (double precision)
+FumblesLost (double precision)
+TwoPointConversionAttempts (double precision) - The number of times a player attempted a two point conversion
+TwoPointConversionPasses (double precision) - The number of times a player passed for a two point conversion
+TwoPointConversionRuns (double precision) - The number of times a player ran for a two point conversion
+TwoPointConversionReceptions (double precision) - The number of times a player caught a two point conversion
+TwoPointConversionReturns (double precision) - The number of times a player returned a two point conversion
+SoloTackles (double precision)
+AssistedTackles (double precision)
+TacklesForLoss (double precision)
+Sacks (double precision)
+SackYards (double precision)
+PassesDefended (double precision)
+Safeties (double precision)
+FumblesForced (double precision)
+FumblesRecovered (double precision)
+FumbleReturnYards (double precision)
+FumbleReturnTouchdowns (double precision)
+Interceptions (double precision)
+InterceptionReturnYards (double precision)
+InterceptionReturnTouchdowns (double precision)
+PuntReturns (double precision)
+PuntReturnYards (double precision)
+PuntReturnTouchdowns (double precision)
+KickReturns (double precision)
+KickReturnYards (double precision)
+KickReturnTouchdowns (double precision)
+BlockedKicks (double precision)
+BlockedKickReturns (double precision)
+BlockedKickReturnYards (double precision)
+BlockedKickReturnTouchdowns (double precision)
+FieldGoalReturns (double precision)
+FieldGoalReturnYards (double precision)
+FieldGoalReturnTouchdowns (double precision)
+Kickoffs (double precision)
+KickoffYards (double precision)
+KickoffTouchbacks (double precision)
+Punts (double precision)
+PuntYards (double precision)
+PuntTouchbacks (double precision)
+PuntsHadBlocked (double precision)
+FieldGoalsAttempted (double precision)
+FieldGoalsMade (double precision)
+FieldGoalsYards (double precision)
+FieldGoalsHadBlocked (double precision)
+ExtraPointsAttempted (double precision)
+ExtraPointsMade (double precision)
+ExtraPointsHadBlocked (double precision)
+Penalties (double precision)
+PenaltyYards (double precision)
+GameKey (double precision) - If this is a scoring play, this is the GameKey of the game
+SeasonType (double precision) - If this is a scoring play, this is the SeasonType of the game
+ScoringPlayID (double precision) - If this is a scoring play, this is the PlayID of the scoring play
+Season (double precision) - If this is a scoring play, this is Season of the game
+Week (double precision) - If this is a scoring play, this is the Week of the game
+AwayTeam (text) - If this is a scoring play, this is the AwayTeam of the game
+HomeTeam (text) - If this is a scoring play, this is the HomeTeam of the game
+Date (text) - If this is a scoring play, this is the Date of the game
+Sequence_scoring (double precision) - The order in which the scoring play happened
+Team_scoring (text) - If this is a scoring play, the Team that scored
+Quarter (text) - If this is a scoring play, the Quarter in which the scoring play happened
+TimeRemaining (text) - If this is a scoring play, the Time Remaining in the Quarter when the scoring play happened
+AwayScore (double precision) - If this is a scoring play, the AwayScore (double precision)
+HomeScore (double precision) - If this is a scoring play, the HomeScore (double precision)
+ScoreID (double precision) - If this is a scoring play, the ScoreID (double precision)
 """
 
 
 def play_by_play_get_answer(model, question):
     llm = None
     if model == 'openai':
-        llm = ChatOpenAI(model='gpt-4o')
+        llm = ChatOpenAI(model='gpt-4o', temperature=0.9)
 
     elif model == 'anthropic':
         llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620')
