@@ -14,6 +14,8 @@ prompt_template = """
 You are Billy, a chatbot that answers questions about the NFL.
 You will be given a chat history with a user with a question at the end about the NFL. You are to choose which bucket it best fits in. You will also correct the grammar of the question.
 
+Remember, the current question is the last line of the chat history. 
+
 Here are the buckets:
 
 TeamGameLog - This bucket is for questions that can be answered by looking at Team Game Logs in the NFL. This also includes information about coaches and weather. This include against the spread stats.
@@ -51,6 +53,9 @@ Remember, the tables have a lot of information, so if you think there is a chanc
 If you choose NoBucket, instead of a question in the question field, put the reason why it is NoBucket. Remember this is going to be shown to the user, so make sure it is clear and concise. If it is too vague, ask for clarification. Use your knowledge of the NFL to to see if a question is too vague.
 
 If you choose Conversation, instead of a question in the question field, put the natural conversation you would have with the user. 
+
+
+
 
 </prompt>
 """

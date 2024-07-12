@@ -29,6 +29,9 @@ The query will run on a database of NFL Play by Play with the following schema:
 {table_metadata_string}
 </database_schema>
 
+If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided." 
+
+
 
 
 
@@ -38,6 +41,8 @@ The name of the table is playbyplay.
 Instead of HomeTeam and AwayTeam, reference the Team column and the HomeOrAway Column, The Opponent column will have the opposite side.
 You will have to infer player names from little data from your understanding of the NFL. For example, if the user only says Kelce, you have to infer the name Travis Kelce
 When looking for specific match ups, look for plays with the same GameKey for the two teams playing each other.
+
+If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided." 
 
 Only respond with the sql query, no explanation or anything else. Encompass the sql query with 
 ```sql
@@ -53,9 +58,11 @@ To filter the data for all plays by date, you can use the PlayTime column. The P
 Scoring plays only count touchdowns, so for extra points, field goals, and safeties you must use other columns to determine if it is a scoring play.
 
 
-Remember, do not use GameKey, SeasonType, ScoringPlayID, Season, Week, AwayTeam, HomeTeam, Date, Sequence_scoring, Team_scoring, Quarter, TimeRemaining, PlayDescription, AwayScore, HomeScore, or ScoreID in your query unless it is a scoring play.
+Remember, do not use GameKey, SeasonType, ScoringPlayID, Season, Week, AwayTeam, HomeTeam, Date, Sequence_scoring, Team_scoring, Quarter, TimeRemaining, AwayScore, HomeScore, or ScoreID in your query unless it is a scoring play.
 
-All columns must be surrounded by double quotes, such as "Name" or "Team".
+All columns must be surrounded by double quotes, such as
+In the slot means the direction is Middle.
+
 
 </special_instructions>
 
@@ -85,6 +92,10 @@ Also, keep in mind that there are duplicate plays in the database, so you may ne
 
 Use the attempted and made columns to calculate percentages. For example, if you want to calculate the extra point conversion percentage, you would use ExtraPointsMade and ExtraPointsAttempted.
 
+
+If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided." 
+
+
 Assistant: 
 
 """
@@ -112,7 +123,6 @@ YardLineTerritory (TEXT)
 YardsToEndZone (INTEGER)
 Type (TEXT) - The Type of Play that occurred (possible values: Rush, PassCompleted, PassIncomplete, PassIntercepted, TwoPointConversion, Punt, Kickoff, FieldGoal, ExtraPoint, Fumble, Penalty, Sack, Timeout, Period)
 YardsGained (INTEGER)
-Description (TEXT)
 IsScoringPlay (INTEGER) - Only counts for touchdowns.
 PlayStatID (REAL)
 PlayID_playstats (REAL)
@@ -122,7 +132,7 @@ Name (TEXT)
 Team_playstats (TEXT)
 Opponent_playstats (TEXT)
 HomeOrAway (TEXT)  - HOME or AWAY
-Direction (TEXT)
+Direction (TEXT) - The direction of the play (possible values: Left, Middle, Right)
 Updated_playstats (TEXT)
 Created_playstats (TEXT)
 PassingAttempts (REAL)
@@ -201,7 +211,6 @@ Sequence_scoring (REAL) - The order in which the scoring play happened
 Team_scoring (TEXT) - If this is a scoring play, the Team that scored
 Quarter (TEXT) - If this is a scoring play, the Quarter in which the scoring play happened
 TimeRemaining (TEXT) - If this is a scoring play, the Time Remaining in the Quarter when the scoring play happened
-PlayDescription (TEXT) - If this is a scoring play, the PlayDescription of the scoring play
 AwayScore (REAL) - If this is a scoring play, the AwayScore (REAL)
 HomeScore (REAL) - If this is a scoring play, the HomeScore (REAL)
 ScoreID (REAL) - If this is a scoring play, the ScoreID (REAL)

@@ -72,6 +72,7 @@ There is no weather column, so use a combination of temperature, humidity, and w
 
 
 
+
 </special_instructions>
 
 <question>
@@ -94,6 +95,8 @@ WHERE "Season" = 2023 AND "Name" = 'Patrick Mahomes'
 
 
 Your response will be executed on a database of NFL Player Logs and NFL Team Logs and the answer will be returned to the User, so make sure the query is correct and will return the correct information.
+
+If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided."
 
 
 

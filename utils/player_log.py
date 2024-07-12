@@ -69,6 +69,8 @@ All columns must be surrounded by double quotes, such as "Name" or "Team".
 
 There is no weather column, so use a combination of temperature, humidity, and wind speed to determine the weather conditions of the game.
 
+
+
 </special_instructions>
 
 <question>
@@ -92,6 +94,8 @@ WHERE "Season" = 2023 AND "Name" = 'Patrick Mahomes'
 
 Your response will be executed on a database of NFL Player Logs and the answer will be returned to the User, so make sure the query is correct and will return the correct information.
 You may have to use the "like" operator to match player names, as the user may not provide the full name of the player or the database may have a different format for the player name.
+
+If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided."
 
 
 Assistant: 

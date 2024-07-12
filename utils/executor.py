@@ -18,14 +18,14 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 
 prompt_template = """
 
-There was an error executing this sql query.
+There was an error executing this sql query:
 
 {query}
 
 
 This was the error message: {error_message}
 
-Give me the fixed query to run. Do not include any other information, I want to see the fixed query only.
+Give me the fixed query to run. Do not include any other information, I want to see the fixed query only. Also fix the logic of the query if needed.
 
 """
 
@@ -43,7 +43,9 @@ def new_sql_query(old_query, error_message, model):
     llm_chain = prompt_template | llm
     answer = llm_chain.invoke({'query': old_query, 'error_message': error_message})
 
-    return answer.content
+    print(answer.content)
+
+    return extract_sql_query(answer.content)
 
 
 
@@ -59,6 +61,7 @@ def execute_query(query):
     try:
         cur.execute(query)
     except Exception as e:
+        print(f'Error: {e}. Retrying...')
         return execute_query(new_sql_query(query, str(e), 'openai'))
         
         

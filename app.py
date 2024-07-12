@@ -102,14 +102,36 @@ def chat(data):
             raw_query = None
 
             if bucket == 'TeamGameLog':
-                raw_query = team_log_get_answer('anthropic', question)
+                raw_query = team_log_get_answer('openai', question)
             elif bucket == 'PlayerGameLog':
-                raw_query = player_log_get_answer('anthropic', question)
+                raw_query = player_log_get_answer('openai', question)
             elif bucket == 'PlayByPlay':
-                raw_query = play_by_play_get_answer('anthropic', question)
+                raw_query = play_by_play_get_answer('openai', question)
             elif bucket == 'TeamAndPlayerLog':
                 raw_query = player_and_team_log_get_answer(
-                    'anthropic', question)
+                    'openai', question)
+            
+            print(f'Raw Query: {raw_query}')
+                
+            if 'error' and 'cannot' in raw_query.lower():
+                emit('billy', {'response': '',
+                               'type': 'query', 'status': 'generating'})
+                generator = ask_expert(question)
+                answer = ''
+                generating_answer = True
+                while generating_answer:
+                    try:
+                        next_answer = next(generator)
+                        answer += next_answer
+                        emit('billy', {'response': next_answer,
+                             'type': 'answer', 'status': 'generating'})
+                    except Exception as e:
+                        generating_answer = False
+                        emit('billy', {'response': next_answer,
+                             'type': 'answer', 'status': 'done'})
+
+                return answer
+
 
             # Extract the SQL query from the raw_query
             query = extract_sql_query(raw_query)

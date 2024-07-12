@@ -62,6 +62,7 @@ All columns must be surrounded by double quotes, such as "Name" or "Team".
 
 There is no weather column, so use a combination of temperature, humidity, and wind speed to determine the weather conditions of the game.
 
+
 </special_instructions>
 
 <question>
@@ -72,6 +73,8 @@ Given the database schema, here is the SQL query that answers `{user_question}`:
 </question>
 
 Here is an example response for the question: "Ravens record against the spread vs teams with winning records"
+
+If the question cannot be answered with the data provided, return the string "cannot be answered".
 
 
 <example_response>
@@ -97,6 +100,8 @@ Your response will be executed on a database of NFL Team Logs and the answer wil
 The default SeasonType is Regular Season or 1. If the question is about a different SeasonType, please specify in the query. The default season is 2023.
 Use the Wins and Losses columns to determine the number of wins and losses for a team. They reset each season and each season type. Remember, they are cumulative up to the current game.
 
+
+If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided."
 
 
 Assistant: 
