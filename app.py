@@ -166,9 +166,12 @@ def chat(data):
 
             try:
 
+                print('Inserting into MongoDB')
+
                 collection = db['correct']
                 collection.insert_one(
                     {"question": question, "query": query, "answer": answer_string, "ip": ip, "session": session})
+                print("Inserted into MongoDB")
             except Exception as e:
                 print("Could not insert into MongoDB", e)
 
