@@ -8,7 +8,6 @@ evaluation_questions = [
 ]
 
 
-url = 'http://localhost:8080/chat'
 
 def evaluate_consistency(): 
     for question in evaluation_questions: 

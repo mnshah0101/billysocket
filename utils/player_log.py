@@ -298,12 +298,15 @@ Experience (double precision) - The number of years the player has played in the
 def player_log_get_answer(model, question):
     llm = None
     if model == 'openai':
-        llm = ChatOpenAI(model='gpt-4o', temperature=0.96)
+        try: 
+            llm = ChatOpenAI(model='gpt-4o', temperature=0.96)
+        except Exception as e:
+            print("key not given", e)
 
     elif model == 'anthropic':
         llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620')
-        
-
+    
+    print(llm)
     llm_chain = sql_prompt | llm
     answer = llm_chain.invoke(
         {'user_question': question, "table_metadata_string": testnfl_metadata})

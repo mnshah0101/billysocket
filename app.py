@@ -13,6 +13,7 @@ from utils.perplexity import ask_expert
 from flask import request
 import dotenv
 import os
+import certifi
 from pymongo import MongoClient
 
 dotenv.load_dotenv()
@@ -25,7 +26,7 @@ CORS(app)
 
 MONGO_DB_URL = os.getenv('MONGO_DB_URL')
 try:
-    client = MongoClient(MONGO_DB_URL)
+    client = MongoClient(MONGO_DB_URL, tlsCAFile=certifi.where())
     db = client['chatbot']
     print("Connected to MongoDB")
 except Exception as e:
@@ -164,25 +165,72 @@ def chat(data):
         except Exception as e:
             answerGenerating = False
 
-            try:
-
-                print('Inserting into MongoDB')
-
-                collection = db['correct']
-                collection.insert_one(
-                    {"question": question, "query": query, "answer": answer_string, "ip": ip, "session": session})
-                print("Inserted into MongoDB")
-            except Exception as e:
-                print("Could not insert into MongoDB", e)
-
-
-
             emit('billy', {'response': answer_string,
                  'type': 'answer', 'status': 'done'})
             
 
 
     return answer_string
+
+@app.route('/store-query', methods=['POST'])
+def store_query():
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+
+    required_fields = ['query', 'answer', 'correct', 'session']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'{field} not found in request data'}), 400
+
+    query = data['query']
+    answer = data['answer']
+    correct = data['correct']
+    session = data['session']
+    ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+
+    collection = db['correct']
+    
+    try:
+        # Try to find an existing entry
+        existing_entry = collection.find_one({
+            "query": query,
+            "session": session
+        })
+
+        if existing_entry:
+            # Update the existing entry
+            result = collection.update_one(
+                {"_id": existing_entry["_id"]},
+                {"$set": {
+                    "answer": answer,
+                    "correct": correct,
+                    "ip": ip
+                }}
+            )
+            if result.modified_count > 0:
+                return jsonify({'message': 'Query updated successfully'}), 200
+            else:
+                return jsonify({'error': 'No changes made to the existing entry'}), 400
+        else:
+            # Insert a new entry
+            new_entry = {
+                "query": query,
+                "answer": answer,
+                "correct": correct,
+                "session": session,
+                "ip": ip
+            }
+            result = collection.insert_one(new_entry)
+            if result.inserted_id:
+                return jsonify({'message': 'New query stored successfully'}), 201
+            else:
+                return jsonify({'error': 'Failed to insert new entry'}), 500
+
+    except Exception as e:
+        print(f"Error interacting with MongoDB: {e}")
+        return jsonify({'error': 'Could not store/update query', 'details': str(e)}), 500
 
 
 
@@ -257,7 +305,7 @@ def chat_http(data):
 
 if __name__ == '__main__':
 
-    app.run(port=33507, debug=True)
+    app.run(debug=True)
 
 
     socketio.run(app)
