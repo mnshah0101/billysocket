@@ -182,9 +182,8 @@ def store_query():
 
     required_fields = ['question', 'answer', 'correct', 'category', 'sql']
     for field in required_fields:
-        print(field)
         if field not in data:
-            return jsonify({'error': f'{field} not found in request data'}), 400
+            return jsonify({'error': f'{field} Check not found in request data'}), 400
 
     question = data['question']
     answer = data['answer']
