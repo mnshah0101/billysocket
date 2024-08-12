@@ -10,6 +10,7 @@ from flask_socketio import SocketIO
 from flask_socketio import send, emit
 from utils.player_and_team import player_and_team_log_get_answer
 from utils.perplexity import ask_expert
+from PromptEngineer.setup import Billy
 from flask import request
 from supabase import create_client, Client
 import dotenv
@@ -67,30 +68,28 @@ def chat(data):
     
     while True:
         try:
-            # Call the question_chooser function to get the bucket and question
-            bucket, question = question_chooser('anthropic', message)
+            bucket, sql = Billy.get_query(message)
 
             print(f'Bucket: {bucket}')
-            print(f'Question: {question}')
             
             if bucket =='Conversation':
-                emit('billy', {'response':question, 'type': 'answer', 'status': 'done'})
+                emit('billy', {'response':sql, 'type': 'answer', 'status': 'done'})
                 return
 
             if bucket == 'NoBucket':
-                if question == '':
+                if sql == '':
                     emit('billy', {
                         'response': "I am sorry, I do not have an answer for that question.", 'type': 'answer', 'status': 'done'})
                     return
 
                 emit('billy', {
-                        'response':question, 'type': 'answer', 'status': 'done'})
+                        'response':sql, 'type': 'answer', 'status': 'done'})
                 return
             
             if bucket == 'ExpertAnalysis':
                 emit('billy', {'response': '',
                                'type': 'query', 'status': 'generating'})
-                generator = ask_expert(question)
+                generator = ask_expert(sql)
                 answer = ''
                 generating_answer = True
                 while generating_answer:
@@ -106,24 +105,16 @@ def chat(data):
                         
                 return answer
 
-            raw_query = None
+            raw_query = sql
 
-            if bucket == 'TeamGameLog':
-                raw_query = team_log_get_answer('anthropic', question)
-            elif bucket == 'PlayerGameLog':
-                raw_query = player_log_get_answer('anthropic', question)
-            elif bucket == 'PlayByPlay':
-                raw_query = play_by_play_get_answer('anthropic', question)
-            elif bucket == 'TeamAndPlayerLog':
-                raw_query = player_and_team_log_get_answer(
-                    'anthropic', question)
+            
             
             print(f'Raw Query: {raw_query}')
                 
             if 'error' and 'cannot' in raw_query.lower():
                 emit('billy', {'response': '',
                                'type': 'query', 'status': 'generating'})
-                generator = ask_expert(question)
+                generator = ask_expert(sql)
                 answer = ''
                 generating_answer = True
                 while generating_answer:
@@ -157,7 +148,7 @@ def chat(data):
 
    
 
-    answer = get_answer('openai', question, query, result)
+    answer = get_answer('openai', sql, query, result)
 
     answerGenerating = True
     answer_string = ''
