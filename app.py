@@ -11,10 +11,12 @@ from flask_socketio import send, emit
 from utils.player_and_team import player_and_team_log_get_answer
 from utils.perplexity import ask_expert
 from flask import request
+from supabase import create_client, Client
 import dotenv
 import os
-import certifi
-from pymongo import MongoClient
+
+
+
 
 dotenv.load_dotenv()
 
@@ -24,13 +26,12 @@ dotenv.load_dotenv()
 app = Flask(__name__)
 CORS(app) 
 
-MONGO_DB_URL = os.getenv('MONGO_DB_URL')
-try:
-    client = MongoClient(MONGO_DB_URL, tlsCAFile=certifi.where())
-    db = client['chatbot']
-    print("Connected to MongoDB")
-except Exception as e:
-    print("Could not connect to MongoDB", e)
+
+
+# Initialize Supabase client
+supabase_url = os.environ.get("SUPABASE_URL")
+supabase_key = os.environ.get("SUPABASE_KEY")
+supabase: Client = create_client(supabase_url, supabase_key)
 
 
 socketio = SocketIO(app, cors_allowed_origins='*')
@@ -179,60 +180,58 @@ def store_query():
     if not data:
         return jsonify({'error': 'No data provided'}), 400
 
-    required_fields = ['query', 'answer', 'correct', 'session']
+    required_fields = ['question', 'answer', 'correct', 'category', 'sql']
     for field in required_fields:
         if field not in data:
-            return jsonify({'error': f'{field} not found in request data'}), 400
+            return jsonify({'error': f'{field} Check not found in request data'}), 400
 
-    query = data['query']
+    question = data['question']
     answer = data['answer']
     correct = data['correct']
-    session = data['session']
-    ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    category = data['category']
+    sql = data['sql']
+    user_id = data.get('user_id', None)
 
-    collection = db['correct']
-    
     try:
-        # Try to find an existing entry
-        existing_entry = collection.find_one({
-            "query": query,
-            "session": session
-        })
+        # Check if an entry with the same question exists
+        existing_entry = supabase.table("store-queries").select("*").eq("question", question).execute()
 
-        if existing_entry:
+        if existing_entry.data:
             # Update the existing entry
-            result = collection.update_one(
-                {"_id": existing_entry["_id"]},
-                {"$set": {
-                    "answer": answer,
-                    "correct": correct,
-                    "ip": ip
-                }}
-            )
-            if result.modified_count > 0:
+            result = supabase.table("store-queries").update({
+                "answer": answer,
+                "correct": correct,
+                "category": category,
+                "sql": sql,
+                "seen": True
+            }).eq("id", existing_entry.data[0]['id']).execute()
+
+            if result.data:
                 return jsonify({'message': 'Query updated successfully'}), 200
             else:
                 return jsonify({'error': 'No changes made to the existing entry'}), 400
         else:
             # Insert a new entry
             new_entry = {
-                "query": query,
+                "question": question,
                 "answer": answer,
                 "correct": correct,
-                "session": session,
-                "ip": ip
+                "category": category,
+                "sql": sql,
+                "user_id": user_id,
+                "seen": False,
             }
-            result = collection.insert_one(new_entry)
-            if result.inserted_id:
+
+            result = supabase.table("store-queries").insert(new_entry).execute()
+
+            if result.data:
                 return jsonify({'message': 'New query stored successfully'}), 201
             else:
                 return jsonify({'error': 'Failed to insert new entry'}), 500
 
     except Exception as e:
-        print(f"Error interacting with MongoDB: {e}")
+        print(f"Error interacting with Supabase: {e}")
         return jsonify({'error': 'Could not store/update query', 'details': str(e)}), 500
-
-
 
 @app.route('/chat')
 def chat_http(data):
