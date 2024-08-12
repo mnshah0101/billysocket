@@ -73,6 +73,7 @@ six==1.16.0
 sniffio==1.3.1
 soupsieve==2.5
 SQLAlchemy==2.0.30
+supabse==2.6.0
 tenacity==8.3.0
 tiktoken==0.7.0
 tokenizers==0.19.1
