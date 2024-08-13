@@ -38,7 +38,7 @@ Conversation = Table('Conversation',
                      '')
 
 NoBucket = Table('NoBucket',
-                    "This bucket is for questions that are not about the NFL or cannot be answered by looking at stats. If the question is too vague or unclear, it will also be placed in this bucket.",
+                    "This bucket is for questions that are not about the NFL. If the question is too vague or unclear, it will also be placed in this bucket. For predictions or anything subjective, consult the ExpertAnalysis bucket.",
                     '',
                     '')
 
