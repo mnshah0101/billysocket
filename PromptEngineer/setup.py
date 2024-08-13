@@ -29,7 +29,7 @@ PlayByPlay = Table('PlayByPlay',
                    SpecialInstructions.PlayByPlay)
 
 ExpertAnalysis = Table('ExpertAnalysis',
-                       "This bucket is for questions that require expert analysis or opinion. This is good for questions that require a more subjective answer, such as who the best player in the NFL is or what the best team in the NFL is. This is also good for questions that require a more in-depth analysis, such as what the best strategy is for a team to win the Super Bowl. This can also provide real time analysis of games or players, or odds for future/current games.",
+                       "This bucket is for questions that require expert analysis or opinion. This is good for questions that require a more subjective answer, such as who the best player in the NFL is or what the best team in the NFL is. This is also good for questions that require a more in-depth analysis, such as what the best strategy is for a team to win the Super Bowl. This can also provide real time analysis of games or players, or odds for future/current games. Predictions fall into this category.",
                        '',
                        '')
 Conversation = Table('Conversation',
