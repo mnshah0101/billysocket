@@ -87,8 +87,12 @@ def chat(data):
                 return
             
             if bucket == 'ExpertAnalysis':
+                print("Expert Analysis running")
+                print(sql)
                 emit('billy', {'response': '',
                                'type': 'query', 'status': 'generating'})
+                
+                
                 generator = ask_expert(sql)
                 answer = ''
                 generating_answer = True

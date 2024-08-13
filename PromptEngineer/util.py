@@ -75,6 +75,8 @@ class PromptEngineer:
 
         Remember, the tables have a lot of information, so if you think there is a chance the question could be answered by looking at the data, choose the appropriate buckets. If the question is not about the NFL choose NoBucket. If the question is not clear, make it more specific and easier to understand.
 
+        The ExpertAnalysis will be used for anything regarding expert analysis, predictions, live scores, or anything that requires a subjective answer. If you choose expert analysis, in the question field, put the grammatically correct question.
+
         If you choose NoBucket, instead of a question in the question field, put the reason why it is NoBucket. Remember this is going to be shown to the user, so make sure it is clear and concise. If it is too vague, ask for clarification. Use your knowledge of the NFL to see if a question is too vague.
 
         If you choose Conversation, instead of a question in the question field, put the natural conversation you would have with the user. 
@@ -240,7 +242,7 @@ class PromptEngineer:
         if 'NoBucket' in [table.name for table in tables]:
             return 'NoBucket', "I am sorry, I do not have an answer for that question."
         if 'ExpertAnalysis' in [table.name for table in tables]:
-            return 'ExpertAnalysis',"This is expert analysis, and I do not have an answer for that question."
+            return 'ExpertAnalysis', question
 
 
 
