@@ -252,7 +252,7 @@ HomeFullName (TEXT):
 HomeOffensiveScheme (TEXT): (3-4, 4-3).
 HomeDefensiveScheme (TEXT): (PRO, 2TE, 3WR).
 HomeCity (TEXT):
-HomeStadiumDetails (TEXT): A map that looks like "{'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'}".
+HomeStadiumDetails (TEXT): A map that looks like "'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'".
 HomeHeadCoach (TEXT):
 AwayConference (TEXT): Can be AFC or NFC.
 AwayDivision (TEXT): Can be North, South, East, or West.
@@ -260,7 +260,7 @@ AwayFullName (TEXT):
 AwayOffensiveScheme (TEXT): (PRO, 2TE, 3WR).
 AwayDefensiveScheme (TEXT): (3-4, 4-3).
 AwayCity (TEXT):
-AwayStadiumDetails (TEXT): A map that looks like "{'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'}".
+AwayStadiumDetails (TEXT): A map that looks like "'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'".
 AwayHeadCoach (TEXT):
 HomeOffensiveCoordinator (TEXT):
 HomeDefensiveCoordinator (TEXT):
