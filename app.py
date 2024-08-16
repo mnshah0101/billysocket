@@ -65,6 +65,9 @@ def chat(data):
     print(f'IP: {ip}')
     print(f'Session: {session}')
 
+
+    
+
     
     while True:
         try:
