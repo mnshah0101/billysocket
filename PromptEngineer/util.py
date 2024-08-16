@@ -158,13 +158,17 @@ class PromptEngineer:
     def create_sql_query(self, question, tables, example):
 
         # Prepare the columns and instructions based on selected tables
-        columns_string = "\n".join(
-            [f"<table>{table.name}</table>\n<columns>{table.columns}</columns>" for table in tables]
-        )
+        table_information = ''
 
-        table_instructions = "\n".join(
-            [f"<table>{table.name}</table>\n<special_instructions>{table.special_instructions}</special_instructions>" for table in tables]
-        )
+
+
+        for table in tables:
+            table_information += f"\n<table>\nTable Name:{table.name}\n<columns>\n{table.columns}\n</columns>\n"
+            table_information += f"\n<special_instructions>\n{table.special_instructions}\n</special_instructions>\n</table>\n"
+
+        
+
+
 
         raw_llm_prompt = f"""
             User:
@@ -177,15 +181,12 @@ class PromptEngineer:
 
             I will now provide a series of tables and columns with special instructions for each table to help you answer the question. 
 
-            <database_schema>
-            The query will run on a database of tables with the following schema:
-            {columns_string}
-            </database_schema>
+            <table_information>
+            The query will run on a database of tables with the following schema. Special instructions for each table are provided below:
+            {table_information}
+            </information>
 
-            <table_instructions>
-            Here are special instructions for each table:
-            {table_instructions}
-            </table_instructions>
+        
 
             Only respond with the sql query, no explanation or anything else. Encompass the sql query with 
             ```sql
@@ -194,7 +195,6 @@ class PromptEngineer:
             Note this is a PostgreSQL database and use quotes for column names.
             All columns must be surrounded by double quotes, such as "Name" or "Team".
             Your response will be executed on a database of NFL Player Logs and the answer will be returned to the User, so make sure the query is correct and will return the correct information.
-            You may have to use the "like" operator to match player names, as the user may not provide the full name of the player or the database may have a different format for the player name.
 
             This is an example query that you can use as a template:
             <example_query>
