@@ -196,6 +196,11 @@ class PromptEngineer:
             Your response will be executed on a database of NFL Player Logs and the answer will be returned to the User, so make sure the query is correct and will return the correct information.
             You may have to use the "like" operator to match player names, as the user may not provide the full name of the player or the database may have a different format for the player name.
 
+            This is an example query that you can use as a template:
+            <example_query>
+            {example}
+            </example_query>
+
             If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided."
 
             This is a postgres database. Do not create any new columns or tables. Only use the columns that are in the table.
@@ -203,6 +208,9 @@ class PromptEngineer:
             Assistant: 
 
             """
+        
+        print("Raw LLM Prompt:")
+        print(raw_llm_prompt)
         
         # Create the prompt template
         sql_prompt = PromptTemplate.from_template(raw_llm_prompt)
