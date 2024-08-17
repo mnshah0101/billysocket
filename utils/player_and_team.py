@@ -70,6 +70,7 @@ All columns must be surrounded by double quotes, such as "Name" or "Team".
 
 There is no weather column, so use a combination of temperature, humidity, and wind speed to determine the weather conditions of the game.
 
+For player names, if there is an apostrophe in the name, such as O'Shaughnessy, use the "" to surround the name, and use the single apostrophe in the query, such as "O'Shaughnessy".
 
 
 
