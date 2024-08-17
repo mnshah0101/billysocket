@@ -59,7 +59,7 @@ Usually, even when a player is out or injured, they will have a record in the da
 
 Be careful of periods in the player name. For example, TJ Watt is T.J. Watt in the database.
 
-To see how many games a played missed in the regular season, you can use 17 - COUNT(DISTINCT GameKey where the player played).
+To see how many games a played missed in the regular season, you can use 17 - COUNT(DISTINCT games that he played). Another approach is you can also just check the InjuryStatus column and whether they played.
 Use this logic
 
 

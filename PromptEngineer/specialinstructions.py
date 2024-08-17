@@ -49,10 +49,9 @@ PlayerLogInstructions = Prompt(
     - Rookies have a value of `2` in the `Experience` column.
     - A player is injured if the `InjuryStatus` is `Doubtful`, `Out`, or `Questionable`.
     - Use the `DISTINCT` keyword when necessary to avoid duplicate data.
-    - To see how many games a player missed, use `17 (or whatever number) - COUNT(DISTINCT GameKey where the player played)`.
+    - To see how many games a player missed, count the number of games where the `InjuryStatus` is 'Out', 'Doubtful', or 'Questionable'.
     - Be careful of periods in player names, e.g., "T.J. Watt" in the database.
     - Use a combination of temperature, humidity, and wind speed to determine the weather conditions, as there is no `weather` column.
-    - For player names, if there is an apostrophe in the name, such as O'Shaughnessy, use the "" to surround the name, and use the single apostrophe in the query, such as "O'Shaughnessy".
     """
 )
 
