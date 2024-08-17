@@ -52,6 +52,7 @@ PlayerLogInstructions = Prompt(
     - To see how many games a player missed, use `17 (or whatever number) - COUNT(DISTINCT GameKey where the player played)`.
     - Be careful of periods in player names, e.g., "T.J. Watt" in the database.
     - Use a combination of temperature, humidity, and wind speed to determine the weather conditions, as there is no `weather` column.
+    - For player names, if there is an apostrophe in the name, such as O'Shaughnessy, use the "" to surround the name, and use the single apostrophe in the query, such as "O'Shaughnessy".
     """
 )
 
@@ -76,7 +77,8 @@ PlayByPlayInstructions = Prompt(
     - Do not use `GameKey`, `SeasonType`, `ScoringPlayID`, `Season`, `Week`, `AwayTeam`, `HomeTeam`, `Date`, `Sequence_scoring`, `Team_scoring`, `Quarter`, `TimeRemaining`, `AwayScore`, `HomeScore`, or `ScoreID` in your query unless it is a scoring play.
     - In the slot means the direction is `Middle`.
     - If the question cannot be answered with the provided data, return: "Error: Cannot answer question with data provided."
-    - Respond only with the SQL query, enclosed in:
+    - For player names, if there is an apostrophe in the name, such as O'Shaughnessy, use the "" to surround the name, and use the single apostrophe in the query, such as "O'Shaughnessy".
+
 
 
     **Note:**
