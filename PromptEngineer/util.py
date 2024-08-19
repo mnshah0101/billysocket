@@ -204,6 +204,7 @@ class PromptEngineer:
             If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided."
 
             This is a postgres database. Do not create any new columns or tables. Only use the columns that are in the table.
+            The date is {time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())}. Use this to reference the current date in your query, the last season there is data for, which is the 2023 season, or the newest season.
 
             Assistant: 
 
