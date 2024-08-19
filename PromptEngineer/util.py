@@ -224,7 +224,7 @@ class PromptEngineer:
                     print("key not given", e)
 
             elif model == 'anthropic':
-                llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620')
+                llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620', temperature=0.6)
 
             print(llm)
             llm_chain = sql_prompt | llm
