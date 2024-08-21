@@ -479,8 +479,8 @@ Sequence (bigint)
 TimeRemainingMinutes (double precision)
 TimeRemainingSeconds (double precision)
 PlayTime (text)
-Updated (text)
-Created (text)
+Updated (text) - Looks like 2024-05-15T20:29:55
+Created (text) - Looks like 2024-05-15T20:29:55
 Team (text)
 Opponent (text)
 Down (bigint)
@@ -584,11 +584,79 @@ ScoreID (double precision) - If this is a scoring play, the ScoreID (double prec
 """)
 
 
+BettingPropsColumns = Prompt("BettingProps", "Columns",
+"""
+Columns in table 'bettingprops':
+Closed (boolean)
+ConsensusOutcomes (double precision)
+BettingBetTypeID (bigint) - The unique ID of the bet type.
+AwayTeamID (bigint)
+HomeTeamID (bigint)
+GlobalGameID (bigint)
+GlobalAwayTeamID (bigint)
+GlobalHomeTeamID (bigint)
+PointSpreadAwayTeamMoneyLine (bigint)
+PointSpreadHomeTeamMoneyLine (bigint)
+ScoreID (bigint)
+GameKey (bigint)
+HomeRotationNumber (double precision)
+AwayRotationNumber (double precision)
+OverPayout (bigint)
+UnderPayout (bigint)
+SeasonType (bigint)
+Attendance (bigint)
+IsClosed (boolean)
+Season (bigint)
+Week (bigint)
+BettingMarketTypeID (bigint)
+BettingPeriodTypeID (bigint)
+AnyBetsAvailable (boolean)
+BettingEventID (bigint) - The unique ID of the event in the market.
+PointSpread (double precision) 
+OverUnder (double precision)
+HasStarted (boolean)
+IsInProgress (boolean)
+IsOver (boolean)
+Has1stQuarterStarted (boolean)
+Has2ndQuarterStarted (boolean)
+Has3rdQuarterStarted (boolean)
+Has4thQuarterStarted (boolean)
+IsOvertime (boolean)
+PlayerID (double precision) - Player id if is player prop or None
+StadiumID (bigint) - The unique ID of the stadium where the game is played.
+BettingMarketID (bigint) - The unique ID of the bet in the market.
+AwayTeamMoneyLine (bigint)
+HomeTeamMoneyLine (bigint)
+Canceled (boolean)
+LastUpdated (text) -
+BettingMarketType (text)
+BettingBetType (text) - Could be ['Total Points', 'Spread', 'Moneyline', 'Total Passing Yards', 'Total Rushing Yards', 'Total Receiving Yards', 'To Score a Touchdown', 'Player To Score Last Touchdown', 'To Score First Touchdown', 'To Score a D/ST Touchdown','Total Points Odd/Even', 'To Go To Overtime','First Team To Score', 'Total Rushing + Receiving TDs', 'Team To Score First Touchdown', 'Total Rushing & Receiving Yards', 'Total Field Goals Scored', 'Total Receptions', 'Race to 10 Points', 'Race To 20 Points', 'Race To 15 Points', 'Race To 25 Points', 'Moneyline (3-Way)', 'To Complete First Pass']
+BettingPeriodType (text) - Could be ['Full Game', 'First Half', '1st Quarter', 'Regular Season']
+PlayerName (text) - Player name if player prop or None
+Created (text)
+Updated (text)
+AvailableSportsbooks (text) - Looks like [{'SportsbookID': 8, 'Name': 'FanDuel'}, {'SportsbookID': 7, 'Name': 'DraftKings'}, {'SportsbookID': 22, 'Name': 'Consensus'}, {'SportsbookID': 24, 'Name': 'BetMGM'}, {'SportsbookID': 19, 'Name': 'Caesars'}], which is an array of dictionaries, each containing the SportsbookID and its betting stats.
+BettingOutcomes (text) - Looks like {'BettingOutcomeID': 94547450, 'BettingMarketID': 470742, 'BettingOutcomeTypeID': 2, 'BettingOutcomeType': 'Away', 'PayoutAmerican': -105, 'PayoutDecimal': 1.9523809523809523, 'Value': 1.5, 'Participant': 'Green Bay Packers', 'IsAvailable': True, 'IsAlternate': False, 'Created': '2024-06-08T13:42:52', 'Updated': '2024-08-11T22:44:41', 'Unlisted': None, 'TeamID': 12, 'PlayerID': None, 'GlobalTeamID': 12, 'SportsbookUrl': 'https://sportsbook.fanduel.com/football/nfl/green-bay-packers-@-philadelphia-eagles-33181919', 'IsInPlay': False, 'SportsbookMarketID': '424043453', 'SportsbookOutcomeID': '50192', 'SportsBook': {'SportsbookID': 8, 'Name': 'FanDuel'}}] - where each dictionary contains the BettingOutcomeID, BettingMarketID, BettingOutcomeTypeID, BettingOutcomeType, PayoutAmerican, PayoutDecimal, Value, Participant, IsAvailable, IsAlternate, Created, Updated, Unlisted, TeamID, PlayerID, GlobalTeamID, SportsbookUrl, IsInPlay, SportsbookMarketID, SportsbookOutcomeID, and SportsBook.
+AvailableSportsbooksNames (text) - An array of the names of the available sportsbooks, like ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'Consensus']
+Date (text)
+AwayTeam (text)
+HomeTeam (text)
+Channel (text)
+Day (text)
+DateTime (text)
+Status (text) - Could be ['Scheduled', 'Final']
+DateTimeUTC (text)
+StadiumDetails (text) - Looks like {'StadiumID': 87, 'Name': 'Arena Corinthians', 'City': 'Sao Paulo', 'State': None, 'Country': 'Brazil', 'Capacity': 47252, 'PlayingSurface': 'Grass', 'GeoLat': -23.54525, 'GeoLong': -46.474278, 'Type': 'Outdoor'}
+""")
+
+
+
 
 class Columns:
     def __init__(self):
         self.TeamGameLog = TeamLogColumns
         self.PlayerGameLog = PlayerLogColumns
         self.PlayByPlay = PlayByPlayColumns
+        self.BettingProps = BettingPropsColumns
 
    

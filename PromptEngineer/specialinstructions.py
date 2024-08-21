@@ -85,12 +85,22 @@ PlayByPlayInstructions = Prompt(
     """
 )
 
+BettingPropsInstructions = Prompt(
+    'BettingProps',
+    "SpecialInstructions",
+    """
+    The name of the table is `bettingprops`.
+    Be careful of the type of the columns, as some are integers, double precision and some are strings.
+    """
+)
+
 
 class SpecialInstructions:
     def __init__(self):
         self.TeamGameLog = TeamLogInstructions
         self.PlayerGameLog = PlayerLogInstructions
         self.PlayByPlay = PlayByPlayInstructions
+        self.BettingProps = BettingPropsInstructions
         
 
    

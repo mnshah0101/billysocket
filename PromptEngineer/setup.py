@@ -37,12 +37,17 @@ Conversation = Table('Conversation',
                      '',
                      '')
 
+BettingProps = Table('BettingProos',
+                     'This bucket has information of betting props for the NFL 2024 season. This includes player props, game lines, and anything that has to do with the 2024 season.',
+                     Columns.BettingProps,
+                     SpecialInstructions.BettingProps)
+
 NoBucket = Table('NoBucket',
                     "This bucket is for questions that are not about the NFL. If the question is too vague or unclear, it will also be placed in this bucket. For predictions or anything subjective, consult the ExpertAnalysis bucket.",
                     '',
                     '')
 
-Billy = PromptEngineer([TeamGameLog, PlayerGameLog, PlayByPlay, ExpertAnalysis, Conversation, NoBucket])
+Billy = PromptEngineer([TeamGameLog, PlayerGameLog, PlayByPlay, ExpertAnalysis, BettingProps, Conversation, NoBucket])
                    
 
 
