@@ -38,7 +38,7 @@ Conversation = Table('Conversation',
                      '')
 
 BettingProps = Table('BettingProos',
-                     'This bucket has information of betting props for the NFL 2024 season. This includes player props, game lines, and anything that has to do with the 2024 season.',
+                     'This bucket has information of betting props for the NFL 2024 season. This includes player props, game lines, and any props that have to do with the 2024 season.',
                      Columns.BettingProps,
                      SpecialInstructions.BettingProps)
 

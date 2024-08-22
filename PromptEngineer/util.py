@@ -214,7 +214,8 @@ class PromptEngineer:
         print(raw_llm_prompt)
         
         # Create the prompt template
-        sql_prompt = PromptTemplate.from_template(raw_llm_prompt)
+        sql_prompt = PromptTemplate.from_template(
+            raw_llm_prompt, validate_template=False)
         
         def player_log_get_answer(model, question):
             llm = None
@@ -225,7 +226,7 @@ class PromptEngineer:
                     print("key not given", e)
 
             elif model == 'anthropic':
-                llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620', temperature=0.6)
+                llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620', temperature=0.2)
 
             print(llm)
             llm_chain = sql_prompt | llm

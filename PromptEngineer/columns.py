@@ -586,6 +586,7 @@ ScoreID (double precision) - If this is a scoring play, the ScoreID (double prec
 
 BettingPropsColumns = Prompt("BettingProps", "Columns",
 """
+Note that the double parentheses are used to represent a dictionary in the text format. For example, {{'SportsbookID': 8, 'Name': 'FanDuel'}} is a dictionary in the text format. When you see double parentheses, you should treat it as single parentheses in the actual data.
 Columns in table 'bettingprops':
 Closed (boolean)
 ConsensusOutcomes (double precision)
@@ -635,8 +636,8 @@ BettingPeriodType (text) - Could be ['Full Game', 'First Half', '1st Quarter', '
 PlayerName (text) - Player name if player prop or None
 Created (text)
 Updated (text)
-AvailableSportsbooks (text) - Looks like [{'SportsbookID': 8, 'Name': 'FanDuel'}, {'SportsbookID': 7, 'Name': 'DraftKings'}, {'SportsbookID': 22, 'Name': 'Consensus'}, {'SportsbookID': 24, 'Name': 'BetMGM'}, {'SportsbookID': 19, 'Name': 'Caesars'}], which is an array of dictionaries, each containing the SportsbookID and its betting stats.
-BettingOutcomes (text) - Looks like {'BettingOutcomeID': 94547450, 'BettingMarketID': 470742, 'BettingOutcomeTypeID': 2, 'BettingOutcomeType': 'Away', 'PayoutAmerican': -105, 'PayoutDecimal': 1.9523809523809523, 'Value': 1.5, 'Participant': 'Green Bay Packers', 'IsAvailable': True, 'IsAlternate': False, 'Created': '2024-06-08T13:42:52', 'Updated': '2024-08-11T22:44:41', 'Unlisted': None, 'TeamID': 12, 'PlayerID': None, 'GlobalTeamID': 12, 'SportsbookUrl': 'https://sportsbook.fanduel.com/football/nfl/green-bay-packers-@-philadelphia-eagles-33181919', 'IsInPlay': False, 'SportsbookMarketID': '424043453', 'SportsbookOutcomeID': '50192', 'SportsBook': {'SportsbookID': 8, 'Name': 'FanDuel'}}] - where each dictionary contains the BettingOutcomeID, BettingMarketID, BettingOutcomeTypeID, BettingOutcomeType, PayoutAmerican, PayoutDecimal, Value, Participant, IsAvailable, IsAlternate, Created, Updated, Unlisted, TeamID, PlayerID, GlobalTeamID, SportsbookUrl, IsInPlay, SportsbookMarketID, SportsbookOutcomeID, and SportsBook.
+AvailableSportsbooks (text) - Looks like [{{'SportsbookID': 8, 'Name': 'FanDuel'}}, {{'SportsbookID': 7, 'Name': 'DraftKings'}}, {{'SportsbookID': 22, 'Name': 'Consensus'}}, {{'SportsbookID': 24, 'Name': 'BetMGM'}}, {{'SportsbookID': 19, 'Name': 'Caesars'}}], which is an array of dictionaries, each containing the SportsbookID and its betting stats.
+BettingOutcomes (text) - Looks like {{'BettingOutcomeID': 94547450, 'BettingMarketID': 470742, 'BettingOutcomeTypeID': 2, 'BettingOutcomeType': 'Away', 'PayoutAmerican': -105, 'PayoutDecimal': 1.9523809523809523, 'Value': 1.5, 'Participant': 'Green Bay Packers', 'IsAvailable': True, 'IsAlternate': False, 'Created': '2024-06-08T13:42:52', 'Updated': '2024-08-11T22:44:41', 'Unlisted': None, 'TeamID': 12, 'PlayerID': None, 'GlobalTeamID': 12, 'SportsbookUrl': 'https://sportsbook.fanduel.com/football/nfl/green-bay-packers-@-philadelphia-eagles-33181919', 'IsInPlay': False, 'SportsbookMarketID': '424043453', 'SportsbookOutcomeID': '50192', 'SportsBook': {{'SportsbookID': 8, 'Name': 'FanDuel'}}}}] - where each dictionary contains the BettingOutcomeID, BettingMarketID, BettingOutcomeTypeID, BettingOutcomeType, PayoutAmerican, PayoutDecimal, Value, Participant, IsAvailable, IsAlternate, Created, Updated, Unlisted, TeamID, PlayerID, GlobalTeamID, SportsbookUrl, IsInPlay, SportsbookMarketID, SportsbookOutcomeID, and SportsBook.
 AvailableSportsbooksNames (text) - An array of the names of the available sportsbooks, like ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'Consensus']
 Date (text)
 AwayTeam (text)
@@ -646,7 +647,7 @@ Day (text)
 DateTime (text)
 Status (text) - Could be ['Scheduled', 'Final']
 DateTimeUTC (text)
-StadiumDetails (text) - Looks like {'StadiumID': 87, 'Name': 'Arena Corinthians', 'City': 'Sao Paulo', 'State': None, 'Country': 'Brazil', 'Capacity': 47252, 'PlayingSurface': 'Grass', 'GeoLat': -23.54525, 'GeoLong': -46.474278, 'Type': 'Outdoor'}
+StadiumDetails (text) - Looks like {{'StadiumID': 87, 'Name': 'Arena Corinthians', 'City': 'Sao Paulo', 'State': None, 'Country': 'Brazil', 'Capacity': 47252, 'PlayingSurface': 'Grass', 'GeoLat': -23.54525, 'GeoLong': -46.474278, 'Type': 'Outdoor'}}
 """)
 
 
