@@ -47,7 +47,13 @@ NoBucket = Table('NoBucket',
                     '',
                     '')
 
-Billy = PromptEngineer([TeamGameLog, PlayerGameLog, PlayByPlay, ExpertAnalysis, BettingProps, Conversation, NoBucket])
+ByeWeek = Table('ByeWeek',
+                "This bucket is to figure out what week a team has a bye week.",
+                Columns.ByeWeek,
+                SpecialInstructions.ByeWeek)
+
+
+Billy = PromptEngineer([TeamGameLog, PlayerGameLog, PlayByPlay, ExpertAnalysis, BettingProps, ByeWeek, Conversation, NoBucket])
                    
 
 

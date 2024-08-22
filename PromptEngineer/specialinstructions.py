@@ -94,6 +94,15 @@ BettingPropsInstructions = Prompt(
     """
 )
 
+ByeWeekInstructions = Prompt(
+    'ByeWeek',
+    "SpecialInstructions",
+    """
+    The name of the table is `byeweeks`.
+    The team is the abbreviation of the team name. For example 49ers is `SF`.
+    """
+)
+
 
 class SpecialInstructions:
     def __init__(self):
@@ -101,6 +110,7 @@ class SpecialInstructions:
         self.PlayerGameLog = PlayerLogInstructions
         self.PlayByPlay = PlayByPlayInstructions
         self.BettingProps = BettingPropsInstructions
+        self.ByeWeek = ByeWeekInstructions
         
 
    

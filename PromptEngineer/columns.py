@@ -650,6 +650,16 @@ DateTimeUTC (text)
 StadiumDetails (text) - Looks like {{'StadiumID': 87, 'Name': 'Arena Corinthians', 'City': 'Sao Paulo', 'State': None, 'Country': 'Brazil', 'Capacity': 47252, 'PlayingSurface': 'Grass', 'GeoLat': -23.54525, 'GeoLong': -46.474278, 'Type': 'Outdoor'}}
 """)
 
+ByeWeekColumns = Prompt("ByeWeek", "Columns",
+""" 
+Season (bigint)
+Week (bigint)
+Team (text)
+"""
+    
+    )
+
+
 
 
 
@@ -659,5 +669,6 @@ class Columns:
         self.PlayerGameLog = PlayerLogColumns
         self.PlayByPlay = PlayByPlayColumns
         self.BettingProps = BettingPropsColumns
+        self.ByeWeek = ByeWeekColumns
 
    
