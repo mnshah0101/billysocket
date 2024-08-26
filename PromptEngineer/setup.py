@@ -43,7 +43,7 @@ BettingProps = Table('BettingProos',
                      SpecialInstructions.BettingProps)
 
 NoBucket = Table('NoBucket',
-                    "This bucket is for questions that are not about the NFL. If the question is too vague or unclear, it will also be placed in this bucket. For predictions or anything subjective, consult the ExpertAnalysis bucket.",
+                    "This bucket is for questions that are not about the NFL. If the question is too vague or unclear, it will also be placed in this bucket. For predictions or anything subjective, consult the ExpertAnalysis bucket. For conversational questions, you can use the Conversation bucket. Use this bucket conservatively.",
                     '',
                     '')
 
