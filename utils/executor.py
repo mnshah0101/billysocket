@@ -38,7 +38,7 @@ def new_sql_query(old_query, error_message, model):
         llm = ChatOpenAI(model='gpt-4o')
 
     elif model == 'anthropic':
-        llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620')
+        llm = ChatAnthropic(model_name='claude-3-opus-20240229')
 
     llm_chain = prompt_template | llm
     answer = llm_chain.invoke({'query': old_query, 'error_message': error_message})
