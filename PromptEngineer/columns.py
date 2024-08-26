@@ -246,28 +246,6 @@ GlobalTeamID (BIGINT):
 GlobalOpponentID (BIGINT):
 ScoreID (BIGINT):
 outer_key (TEXT):
-HomeConference (TEXT): Can be AFC or NFC.
-HomeDivision (TEXT): Can be North, East, West, South.
-HomeFullName (TEXT):
-HomeOffensiveScheme (TEXT): (3-4, 4-3).
-HomeDefensiveScheme (TEXT): (PRO, 2TE, 3WR).
-HomeCity (TEXT):
-HomeStadiumDetails (TEXT): A map that looks like "'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'".
-HomeHeadCoach (TEXT):
-AwayConference (TEXT): Can be AFC or NFC.
-AwayDivision (TEXT): Can be North, South, East, or West.
-AwayFullName (TEXT):
-AwayOffensiveScheme (TEXT): (PRO, 2TE, 3WR).
-AwayDefensiveScheme (TEXT): (3-4, 4-3).
-AwayCity (TEXT):
-AwayStadiumDetails (TEXT): A map that looks like "'StadiumID': 3, 'Name': 'MetLife Stadium', 'City': 'East Rutherford', 'State': 'NJ', 'Country': 'USA', 'Capacity': 82500, 'PlayingSurface': 'Artificial', 'GeoLat': 40.813528, 'GeoLong': -74.074361, 'Type': 'Outdoor'".
-AwayHeadCoach (TEXT):
-HomeOffensiveCoordinator (TEXT):
-HomeDefensiveCoordinator (TEXT):
-HomeSpecialTeamsCoach (TEXT):
-AwayOffensiveCoordinator (TEXT):
-AwayDefensiveCoordinator (TEXT):
-AwaySpecialTeamsCoach (TEXT):
 Wins (BIGINT): These are the wins up to the current game. They reset each season and each season type.
 Losses (BIGINT): These are the losses up to the current game. They reset each season and each season type.
 OpponentWins (BIGINT): These are the opponent's wins up to the current game. They reset each season and each season type.
@@ -630,7 +608,7 @@ AwayTeamMoneyLine (bigint)
 HomeTeamMoneyLine (bigint)
 Canceled (boolean)
 LastUpdated (text) -
-BettingMarketType (text)
+BettingMarketType (text) - Could be ['Game Line', 'Player Prop', 'Team Prop', 'Game Prop']
 BettingBetType (text) - Could be ['Total Points', 'Spread', 'Moneyline', 'Total Passing Yards', 'Total Rushing Yards', 'Total Receiving Yards', 'To Score a Touchdown', 'Player To Score Last Touchdown', 'To Score First Touchdown', 'To Score a D/ST Touchdown','Total Points Odd/Even', 'To Go To Overtime','First Team To Score', 'Total Rushing + Receiving TDs', 'Team To Score First Touchdown', 'Total Rushing & Receiving Yards', 'Total Field Goals Scored', 'Total Receptions', 'Race to 10 Points', 'Race To 20 Points', 'Race To 15 Points', 'Race To 25 Points', 'Moneyline (3-Way)', 'To Complete First Pass']
 BettingPeriodType (text) - Could be ['Full Game', 'First Half', '1st Quarter', 'Regular Season']
 PlayerName (text) - Player name if player prop or None
@@ -639,8 +617,8 @@ Updated (text)
 AvailableSportsbooks (text) - An array of the names of the available sportsbooks, like [FanDuel, DraftKings, BetMGM, Caesars, Consensus] without the quotes.
 AvailableSportsbooksNames (text) - An array of the names of the available sportsbooks, like ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'Consensus'], with the quotes.
 Date (text)
-AwayTeam (text)
-HomeTeam (text)
+AwayTeam (text) - The short name of the away team, like SF for the San Francisco 49ers.
+HomeTeam (text) - The short name of the home team, like DET for the Detroit Lions.
 Channel (text)
 Day (text)
 DateTime (text)
@@ -678,12 +656,180 @@ Unlisted (double precision)
 TeamID (double precision)
 PlayerID (double precision) - Player ID if related to a player prop.
 SportsBook (text) - Looks like 'FanDuel' or 'DraftKings' or 'BetMGM' or 'Caesars' or 'Consensus'
-BettingOutcomeType (text)
-Participant (text)
+BettingOutcomeType (text) - Either ['Over', 'Under', 'Away', 'Home', 'Yes', nan, 'Odd', 'Even', 'No']
+Participant (text) - Either full team name or player name. Example: 'New York Giants' or 'Saquon Barkley'
 Created (text)
 Updated (text)
 SportsbookUrl (text)
 
+""")
+
+TeamInfoColumns = Prompt("TeamInfo", "Columns",
+                         """
+index (bigint) - The unique index of the record.
+TeamID (bigint) - The unique ID of the team.
+StadiumID (bigint) - The unique ID of the stadium.
+ByeWeek (bigint) - The week in which the team has a bye.
+AverageDraftPosition (double precision) - The average draft position of the team.
+AverageDraftPositionPPR (double precision) - The average draft position of the team in PPR leagues.
+UpcomingSalary (bigint) - The teams's upcoming salary.
+UpcomingOpponentRank (bigint) - The rank of the upcoming opponent.
+UpcomingOpponentPositionRank (bigint) - The position rank of the upcoming opponent.
+UpcomingFanDuelSalary (double precision) - The upcoming salary on FanDuel.
+UpcomingDraftKingsSalary (double precision) - The upcoming salary on DraftKings.
+UpcomingYahooSalary (double precision) - The upcoming salary on Yahoo.
+GlobalTeamID (bigint) - The global ID of the team.
+DraftKingsPlayerID (bigint) - The DraftKings-specific ID of the team.
+FanDuelPlayerID (bigint) - The FanDuel-specific ID of the player.
+FantasyDraftPlayerID (bigint) - The FantasyDraft-specific ID of the team.
+YahooPlayerID (bigint) - The Yahoo-specific ID of the team.
+AverageDraftPosition2QB (double precision) - The average draft position in 2QB leagues.
+AverageDraftPositionDynasty (double precision) - The average draft position in dynasty leagues.
+Season (bigint) - The season associated with the data.
+FantasyDraftName (text) - The team's name on FantasyDraft.
+DraftKingsName (text) - The team's name on DraftKings.
+StadiumDetails (text) - Details about the teams stadium.
+FanDuelName (text) - The team's name on FanDuel.
+Key (text) - The team abbreviation, like DET for the Detroit Lions, or SF for the San Francisco 49ers.
+YahooName (text) - The team's name on Yahoo.
+PrimaryColor (text) - The primary color associated with the team.
+City (text) - The city where the team is based.
+Name (text) - The name of the team.
+Conference (text) - The conference the team belongs to.
+Division (text) - The division the team belongs to.
+FullName (text) - The full name of the team or team.
+SecondaryColor (text) - The secondary color associated with the team.
+TertiaryColor (text) - The tertiary color associated with the team.
+QuaternaryColor (text) - The quaternary color associated with the team.
+WikipediaLogoUrl (text) - The URL to the team's logo on Wikipedia.
+HeadCoach (text) - The name of the team's head coach.
+OffensiveCoordinator (text) - The name of the team's offensive coordinator.
+DefensiveCoordinator (text) - The name of the team's defensive coordinator.
+SpecialTeamsCoach (text) - The name of the team's special teams coach.
+OffensiveScheme (text) - The offensive scheme used by the team.
+DefensiveScheme (text) - The defensive scheme used by the team.
+WikipediaWordMarkUrl (text) - The URL to the team's wordmark on Wikipedia.
+UpcomingOpponent (text) - The name of the upcoming opponent.
+
+"""
+)
+
+FuturesColumns = Prompt("Futures", "Columns",
+"""
+TeamID (double precision) - The unique ID of the team if the future is team-related.
+BettingMarketTypeID (bigint) - The unique ID of the betting market type.
+PlayerID (double precision) - The unique ID of the player if the future is player-related.
+BettingPeriodTypeID (bigint) - The unique ID of the betting period type.
+BettingEventID (bigint) - The unique ID of the betting event.
+BettingBetTypeID (bigint) - The unique ID of the betting bet type.
+AnyBetsAvailable (boolean) - Indicates if any bets are available.
+BettingMarketID (bigint) - The unique ID of the betting market.
+Updated (text) - The timestamp of the last update.
+ConsensusOutcomes (text) - The consensus outcomes for the betting market.
+BettingMarketType (text) - The type of the betting market. Could be ['Team Future', 'Player Future', 'Coach Future', 'Miscellaneous Future']
+BettingBetType (text) - The type of the betting bet. - Could be 'NFL Championship Winner', 'AFC Champion', 'NFC Champion', 'MVP',
+       'To Make the Playoffs', 'Win Total', 'Coach of the Year',
+       'Offensive Player of the Year', 'Defensive Player of the Year',
+       'AFC South Division Winner', 'AFC West Division Winner',
+       'NFC East Division Winner', 'NFC North Division Winner',
+       'AFC East Division Winner', 'NFC South Division Winner',
+       'NFC West Division Winner', 'AFC North Division Winner',
+       'Total Receiving Yards', 'Total Receiving Touchdowns',
+       'Total Rushing Yards', 'Total Rushing Touchdowns',
+       'AFC East Second Place', 'AFC East Third Place',
+       'AFC East Fourth Place', 'AFC North Top 2 Finish',
+       'AFC North Fourth Place', 'AFC North Second Place',
+       'AFC North Third Place', 'AFC South Top 2 Finish',
+       'AFC South Second Place', 'AFC South Third Place',
+       'AFC South Fourth Place', 'AFC West Top 2 Finish',
+       'AFC West Second Place', 'AFC West Third Place',
+       'AFC West Fourth Place', 'NFC East Second Place',
+       'NFC East Third Place', 'NFC East Fourth Place',
+       'NFC East Top 2 Finish', 'AFC East Top 2 Finish',
+       'NFC North Second Place', 'NFC North Third Place',
+       'NFC North Fourth Place', 'NFC North Top 2 Finish',
+       'NFC South Second Place', 'NFC South Third Place',
+       'NFC South Fourth Place', 'NFC West Third Place',
+       'NFC West Fourth Place', 'NFC West Top 2 Finish',
+       'NFC West Second Place', 'NFC South Top 2 Finish',
+       'Total Passing Yards', 'Total Passing Touchdowns', 'Total Sacks',
+       'Most Passing Yards', 'Offensive Rookie of the Year',
+       'Defensive Rookie of the Year', 'Any Team To Go 0-17',
+       'Any Team To Go 17-0', 'Most Rookie Passing Yards',
+       'Most Rookie Receiving Yards', 'Most Passing Touchdowns',
+       'Most Receiving Yards', 'Most Rushing Yards',
+       'Comeback Player of the Year', 'Best Record',
+       'Lowest Scoring Team', 'Highest Scoring Team', 'AFC #1 Seed',
+       'NFC #1 Seed', 'Last Winless Team', 'Last Team to Lose',
+       'Team To Start 5-0', 'Team To Start 0-5',
+       'Any Game to Finish in a Tie', 'To Win All 6 Division Games',
+       'To Win All Home Games', 'To Win All Away Games',
+       'To Lose All 6 Division Games', 'To Concede Most Points',
+       'To Concede Least Points', 'To Lose All Home Games',
+       'To Lose All Road Games', 'Most Rushing Touchdowns',
+       'Most Receiving Touchdowns', 'Total Interceptions (DEF/ST)',
+       'Least Wins', 'Most Wins', 'Team to Go 20-0 and Win Super Bowl',
+       'Team to Go 17-0', 'Team to Go 0-17',
+       'Most Tackles Leader (Solo & Assists)',
+       'Most Interceptions Thrown', 'Sack Leader', 'Total Points',
+       'Total Division Wins', 'Worst Record',
+       'Most Quarterback Rushing Yards', 'NFC Wildcard Team',
+       'AFC Wildcard Team', 'To Have 750+ Receiving Yards',
+       'To Have 1250+ Receiving Yards', 'To Have 1000+ Receiving Yards',
+       'Highest Rushing Yards Total', 'Longest Field Goal Made',
+       'Highest Passing Yards Total', 'Highest Passing TD Total',
+       'Highest Interceptions Thrown Total',
+       'Highest Individual Receptions Total',
+       'Highest Individual Sack Total',
+       'Highest Individual FG Made Total', 'Highest Rushing TD Total',
+       'Longest Reception', 'Longest Rush', 'Highest Receiving TD Total',
+       'Highest Individual Passing Yards Game',
+       'Highest Individual Defensive Interception Total',
+       'Total Games To Go To Overtime',
+       'Most Receiving Yards in Any Game',
+       'Most Rushing Yards in Any Game', 'Total Receptions',
+       'To Have 750+ Rushing Yards', 'To Have 1000+ Rushing Yards',
+       'To Have 1250+ Rushing Yards',
+       'Team To Score 1+ Touchdown in Every Game',
+       'Most Kickoff Return Touchdowns', 'Interceptions Thrown',
+       'Total Yards of Longest Touchdown', 'To Throw 35+ Touchdowns',
+       'To Throw 30+ Touchdowns', 'To Have 10+ Receiving Touchdowns',
+       'To Have 12+ Receiving Touchdowns', 'To Throw 40+ Touchdowns',
+       'To Score 10+ Rushing Touchdowns',
+       'To Have 6+ Receiving Touchdowns',
+       'To Have 8+ Receiving Touchdowns', 'Most Rookie Rushing Yards',
+       'Total Individual 200+ Receiving Yard Games',
+       'Highest Receiving Yards Total',
+       'Total Individual 200+ Rushing Yard Games',
+       'Assistant Coach of the Year']
+BettingPeriodType (text) - The period type for the bet. - ['NFL Championship Game', 'Regular Season - Including Playoffs', 'Regular Season']
+TeamKey (text) - The key associated with the team if the future is team-related. The key is the abbreviation of the team, like SF for the San Francisco 49ers.
+PlayerName (text) - The name of the player if the future is player-related.
+Created (text) - The timestamp when the record was created. Looks like 2024-01-21T18:43:23	
+"""
+    
+    )
+
+FuturesOutcomesColumns = Prompt("FuturesOutcomes", "Columns",
+"""
+TeamID (double precision) - The unique ID of the team if the future is team-related.
+PlayerID (double precision) - The unique ID of the player if the future is player-related.
+GlobalTeamID (double precision) - The global ID of the team if the future is team-related.
+IsInPlay (boolean) - Indicates if the event is currently in play.
+PayoutDecimal (double precision) - The decimal value of the payout.
+Value (double precision) - The value associated with the betting outcome.
+BettingOutcomeID (bigint) - The unique ID of the betting outcome.
+BettingOutcomeTypeID (double precision) - The unique ID of the betting outcome type.
+IsAvailable (boolean) - Indicates if the betting outcome is available.
+BettingMarketID (bigint) - The unique ID of the betting market.
+PayoutAmerican (bigint) - The American-style payout value.
+SportsBook (text) - The name of the sportsbook. Could be ['FanDuel', 'Caesars', 'Consensus', 'DraftKings', 'Fanatics','BetMGM']
+BettingOutcomeType (text) - The type of the betting outcome.
+Participant (text) - The team full name or player name. Example: 'New York Giants' or 'Saquon Barkley'
+Created (text) - The timestamp when the record was created.
+Updated (text) - The timestamp of the last update.
+SportsbookMarketID (text) - The unique ID of the sportsbook market.
+SportsbookOutcomeID (text) - The unique ID of the sportsbook outcome.
 """)
 
 class Columns:
@@ -694,5 +840,8 @@ class Columns:
         self.BettingProps = BettingPropsColumns
         self.BettingOutcomes = BettingOutcomesColumns
         self.ByeWeek = ByeWeekColumns
+        self.TeamInfo = TeamInfoColumns
+        self.Futures = FuturesColumns
+        self.FuturesOutcomes = FuturesOutcomesColumns
 
    

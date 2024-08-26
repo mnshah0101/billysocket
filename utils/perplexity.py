@@ -28,6 +28,7 @@ def ask_expert(question):
         model="llama-3-sonar-large-32k-online",
         messages=messages,
         stream=True,
+        temperature=0.3,
     
     )
     for response in response_stream:

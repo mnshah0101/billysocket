@@ -73,11 +73,7 @@ class PromptEngineer:
 
         If you need the most recently played season, it is the 2023 season.  If no season is specified, assume the most recent season and the Season Type to be the regular season unless said otherwise.
 
-        Remember, the tables have a lot of information, so if you think there is a chance the question could be answered by looking at the data, choose the appropriate buckets. If the question is not about the NFL choose NoBucket. If the question is not clear, make it more specific and easier to understand.
-
-        The ExpertAnalysis will be used for anything regarding expert analysis, predictions, live scores, or anything that requires a subjective answer. If you choose expert analysis, in the question field, put the grammatically correct question.
-
-        If you choose NoBucket, instead of a question in the question field, put the reason why it is NoBucket. Remember this is going to be shown to the user, so make sure it is clear and concise. If it is too vague, ask for clarification. Use your knowledge of the NFL to see if a question is too vague.
+        The ExpertAnalysis is the fall back tool, if you cannot answer the question with the data provided, you can use the ExpertAnalysis bucket to provide an answer. Use it sparingly, as most questions can be answered with the data provided.
 
         If you choose Conversation, instead of a question in the question field, put the natural conversation you would have with the user. 
         </prompt>
@@ -93,10 +89,10 @@ class PromptEngineer:
 
             llm = None
             if model == 'openai':
-                llm = ChatOpenAI(model='gpt-4', temperature=0.7)
+                llm = ChatOpenAI(model='gpt-4', temperature=0.3)
 
             elif model == 'anthropic':
-                llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620')
+                llm = ChatAnthropic(model_name='claude-3-opus-20240229')
 
             llm_chain = billy_prompt | llm
 
@@ -205,7 +201,7 @@ class PromptEngineer:
 
             This is a postgres database. Do not create any new columns or tables. Only use the columns that are in the table.
             The date is {time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())}. Use this to reference the current date in your query, the last season there is data for, which is the 2023 season, or the newest season.
-
+            Only use the columns that are in the table. Do not create any new columns or tables.
             Assistant: 
 
             """
@@ -226,7 +222,7 @@ class PromptEngineer:
                     print("key not given", e)
 
             elif model == 'anthropic':
-                llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620', temperature=0.2)
+                llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620', temperature=0.1)
 
             print(llm)
             llm_chain = sql_prompt | llm

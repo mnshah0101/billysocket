@@ -66,7 +66,7 @@ PlayByPlayInstructions = Prompt(
     - Identify players by inferring full names from partial mentions (e.g., "Kelce" implies "Travis Kelce").
     - Use double quotes for column names, such as `"RushingYards"`.
     - Avoid using specific columns unless the play is a scoring play: `GameKey`, `SeasonType`, `ScoringPlayID`, `Season`, `Week`, `AwayTeam`, `HomeTeam`, `Date`, `Sequence_scoring`, `Team_scoring`, `Quarter`, `TimeRemaining`, `AwayScore`, `HomeScore`, `ScoreID`.
-    - Use `DISTINCT` for `PlayID` to handle duplicate plays.
+    - Use `DISTINCT` for `PlayID` to make sure you are not counting the same play multiple times.
     - Calculate percentages using attempted and made columns (e.g., `ExtraPointsMade / ExtraPointsAttempted`).
     - To find WR1, look for the player with the most receiving yards in a season for a team.
     - Scoring plays only count touchdowns. For extra points, field goals, and safeties, use other columns to determine if it is a scoring play.
@@ -91,6 +91,7 @@ BettingPropsInstructions = Prompt(
     """
     The name of the table is `bettingprops`.
     Be careful of the type of the columns, as some are integers, double precision and some are strings.
+    The props are for the 2024 season, which is the upcoming season
     """
 )
 
@@ -110,9 +111,42 @@ BettingOutcomesInstructions = Prompt(
     The name of the table is `outcomes`.
     Be careful of the type of the columns, as some are integers, double precision and some are strings.
     The outcomes map to a Betting Prop. 
+    There is only data for the 2024 season, which is the upcoming season.
     """
 )
 
+TeamInfoInstructions = Prompt(
+    'TeamInfo',
+    "SpecialInstructions",
+    """
+    The name of the table is `teaminfo`.
+    The team is the abbreviation of the team name. For example 49ers is `SF`.
+    Use this table to find specific information about a team in a specific season, like who the coach is, what the offensive and defensive schemes are, and the team's salary.
+    You can do things like join this table with the TeamGameLog table on a season and Team/Key to get more information about a team's performance.
+    """
+)
+
+FuturesInstructions = Prompt(
+    'Futures',
+    "SpecialInstructions",
+    """
+    The name of the table is `futures`.
+    Be careful of the type of the columns, as some are integers, double precision and some are strings.
+    The futures are for the 2024 season, which is the upcoming season.
+    Use the futures outcomes to determine the outcome/line/value of the bet.
+    """
+)
+
+FuturesOutcomesInstructions = Prompt(
+    'FuturesOutcomes',
+    "SpecialInstructions",
+    """
+    The name of the table is `futuresoutcomes`.
+    Be careful of the type of the columns, as some are integers, double precision and some are strings.
+    The outcomes map to a Future. 
+    There is only data for the 2024 season, which is the upcoming season.
+    """
+)
 
 class SpecialInstructions:
     def __init__(self):
@@ -122,6 +156,9 @@ class SpecialInstructions:
         self.BettingProps = BettingPropsInstructions
         self.ByeWeek = ByeWeekInstructions
         self.BettingOutcomes = BettingOutcomesInstructions
+        self.TeamInfo = TeamInfoInstructions
+        self.Futures = FuturesInstructions
+        self.FuturesOutcomes = FuturesOutcomesInstructions
         
 
    
