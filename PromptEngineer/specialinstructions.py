@@ -92,6 +92,8 @@ BettingPropsInstructions = Prompt(
     The name of the table is `bettingprops`.
     Be careful of the type of the columns, as some are integers, double precision and some are strings.
     The props are for the 2024 season, which is the upcoming season
+        Use an available sportsbook, not just consensus lines.
+
     """
 )
 
@@ -112,6 +114,8 @@ BettingOutcomesInstructions = Prompt(
     Be careful of the type of the columns, as some are integers, double precision and some are strings.
     The outcomes map to a Betting Prop. 
     There is only data for the 2024 season, which is the upcoming season.
+        Use an available sportsbook, not just consensus lines.
+
     """
 )
 
@@ -134,6 +138,8 @@ FuturesInstructions = Prompt(
     Be careful of the type of the columns, as some are integers, double precision and some are strings.
     The futures are for the 2024 season, which is the upcoming season.
     Use the futures outcomes to determine the outcome/line/value of the bet.
+        Use an available sportsbook, not just consensus lines.
+
     """
 )
 
@@ -145,6 +151,7 @@ FuturesOutcomesInstructions = Prompt(
     Be careful of the type of the columns, as some are integers, double precision and some are strings.
     The outcomes map to a Future. 
     There is only data for the 2024 season, which is the upcoming season.
+    Use an available sportsbook, not just consensus lines.
     """
 )
 

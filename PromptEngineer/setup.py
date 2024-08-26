@@ -63,7 +63,7 @@ Futures = Table('Futures',
                 Columns.Futures,
                 SpecialInstructions.Futures)
 FuturesOutcomes = Table('FuturesOutcomes',
-                        'This bucket is to figure out the outcomes of futures bets, including payouts, the lines, and the bet value. This is for the 2024 season, which is the upcoming season.',
+                        'This bucket is to figure out the outcomes of futures bets, including payouts, the lines, and the bet value. This is for the 2024 season, which is the upcoming season. If you use the futures bucket, you should also always include this bucket too, as this contains the actual lines.',
                         Columns.FuturesOutcomes,
                         SpecialInstructions.FuturesOutcomes)
 
