@@ -636,8 +636,8 @@ BettingPeriodType (text) - Could be ['Full Game', 'First Half', '1st Quarter', '
 PlayerName (text) - Player name if player prop or None
 Created (text)
 Updated (text)
-AvailableSportsbooks (text) - An array of the names of the available sportsbooks, like ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'Consensus']
-AvailableSportsbooksNames (text) - An array of the names of the available sportsbooks, like ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'Consensus']
+AvailableSportsbooks (text) - An array of the names of the available sportsbooks, like [FanDuel, DraftKings, BetMGM, Caesars, Consensus] without the quotes.
+AvailableSportsbooksNames (text) - An array of the names of the available sportsbooks, like ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'Consensus'], with the quotes.
 Date (text)
 AwayTeam (text)
 HomeTeam (text)
