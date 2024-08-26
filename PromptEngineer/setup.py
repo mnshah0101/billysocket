@@ -54,7 +54,7 @@ ByeWeek = Table('ByeWeek',
 
 Outcomes = Table('Outcomes',
                   "This bucket is to figure out the outcomes of betting props, including payouts, the lines, and the bet value.",
-                  Columns.Outcomes,
+                  Columns.BettingOutcomes,
                   SpecialInstructions.BettingOutcomes)
 
 

@@ -677,7 +677,7 @@ PayoutAmerican (bigint)
 Unlisted (double precision)
 TeamID (double precision)
 PlayerID (double precision) - Player ID if related to a player prop.
-SportsBook (text)
+SportsBook (text) - Looks like 'FanDuel' or 'DraftKings' or 'BetMGM' or 'Caesars' or 'Consensus'
 BettingOutcomeType (text)
 Participant (text)
 Created (text)
