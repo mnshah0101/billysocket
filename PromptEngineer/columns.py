@@ -695,8 +695,8 @@ YahooName (text) - The team's name on Yahoo.
 PrimaryColor (text) - The primary color associated with the team.
 City (text) - The city where the team is based.
 Name (text) - The name of the team.
-Conference (text) - The conference the team belongs to.
-Division (text) - The division the team belongs to.
+Conference (text) - The conference the team belongs to. This could be AFC or NFC.
+Division (text) - The division the team belongs to. This could be East, North, South, or West.
 FullName (text) - The full name of the team or team.
 SecondaryColor (text) - The secondary color associated with the team.
 TertiaryColor (text) - The tertiary color associated with the team.
