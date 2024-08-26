@@ -4,8 +4,37 @@ import time
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import OpenAI, ChatOpenAI
 from langchain_anthropic import ChatAnthropic
+import time
+from openai import OpenAI
+import pinecone
+from pinecone import Pinecone, ServerlessSpec
 
 dotenv.load_dotenv()
+
+open_ai_key = os.getenv("OPENAI_API_KEY")
+pinecone_key = os.getenv("PINECONE_API_KEY")
+
+# Initialize OpenAI client
+client = OpenAI(api_key=open_ai_key)
+
+# Initialize Pinecone
+pc = Pinecone(api_key=pinecone_key)
+
+index_name = "billy-cache"  
+
+existing_indexes = [index_info["name"] for index_info in pc.list_indexes()]
+
+if index_name not in existing_indexes:
+    pc.create_index(
+        name=index_name,
+        dimension=1536,
+        metric="cosine",
+        spec=ServerlessSpec(cloud="aws", region="us-east-1"),
+    )
+    while not pc.describe_index(index_name).status["ready"]:
+        time.sleep(1)
+
+index = pc.Index(index_name)
 
 
 class Table:
@@ -135,21 +164,44 @@ class PromptEngineer:
         return selected_tables, fixed_question
 
     def get_example(self, question):
-        return """
+
+        similar_question, query = self.find_similar_question_sql(question)
+
+        
+
+
+
+        return f"""
+
+        This is the example question: {similar_question}
+        
                 ```sql
-                SELECT
-                    SUM(CASE WHEN ("Score" + "PointSpread") > "OpponentScore" THEN 1 ELSE 0 END) AS WinsAgainstSpread,
-                    SUM(CASE WHEN ("Score" + "PointSpread") < "OpponentScore" THEN 1 ELSE 0 END) AS LossesAgainstSpread,
-                    SUM(CASE WHEN ("Score" + "PointSpread") = "OpponentScore" THEN 1 ELSE 0 END) AS PushesAgainstSpread
-                FROM
-                    teamlog
-                WHERE
-                    "Season" = 2023
-                    AND "SeasonType" = 1
-                    AND "Team" = 'BAL'
-                    AND "OpponentWins" > OpponentLosses;
+                {query}
                 ```
             """
+    
+    def get_embedding(self, text, model="text-embedding-3-small"):
+        text = text.replace("\n", " ")
+        return client.embeddings.create(input = [text], model=model).data[0].embedding
+    
+    def find_similar_question_sql(self, question, top_k=1):
+        query_embedding = self.get_embedding(question)
+
+        search_results = index.query(
+            vector=query_embedding,
+            top_k=top_k,
+            include_metadata=True
+        )
+
+        if not search_results.matches:
+            return None, None
+
+        top_result = search_results.matches[0]
+
+        similar_question = top_result.metadata.get('question')
+        sql_query = top_result.metadata.get('sql_query')
+
+        return similar_question, sql_query
 
     def create_sql_query(self, question, tables, example):
 

@@ -54,7 +54,7 @@ Outcomes = Table('Outcomes',
                   Columns.BettingOutcomes,
                   SpecialInstructions.BettingOutcomes)
 TeamInfo = Table('TeamInfo',
-                 'This bucket is for team info such as team name, team abbreviation, team conference, information about coaches, offensive and defensive scheme, team salary and stadium details. Use this to find specific information about a team in a specific season.',
+                 'This bucket is for team info such as team name, team abbreviation, division, team conference, information about coaches, offensive and defensive scheme, team salary and stadium details. Use this to find specific information about a team in a specific season and general information about a team. This is useful for things like finding conference, division, coach information, and scheme information.',
                  Columns.TeamInfo,
                  SpecialInstructions.TeamInfo)
 
