@@ -13,7 +13,7 @@ SpecialInstructions = SpecialInstructions()
 #create tables
 
 TeamGameLog = Table('TeamGameLog',
-                    " This bucket is for questions that can be answered by looking at Team Game Logs in the NFL. This also includes information about  weather. This include against the spread stats. Also use this for who won divisions and conferences for records and whatnot. The team info will almost always need this table.",
+                    " This bucket is for questions that can be answered by looking at Team Game Logs in the NFL. This also includes information about weather. This include against the spread stats. Also use this for who won divisions and conferences for records and whatnot. The team info will almost always need this table.",
                     Columns.TeamGameLog,
                     SpecialInstructions.TeamGameLog)
 
@@ -54,7 +54,7 @@ Outcomes = Table('Outcomes',
                   Columns.BettingOutcomes,
                   SpecialInstructions.BettingOutcomes)
 TeamInfo = Table('TeamInfo',
-                 'This bucket is for team info such as team name, team abbreviation, division, team conference, information about coaches, offensive and defensive scheme, team salary and stadium details. Use this to find specific information about a team in a specific season and general information about a team. This is useful for things like finding conference, division, coach information, and scheme information.',
+                 'This bucket is for team info such as team name, team abbreviation, division, team conference, information about coaches, offensive and defensive scheme, team salary and stadium details. Use this to find specific information about a team in a specific season and general information about a team. This is useful for things like finding conference, division, coach information, and scheme information. To get information about records and winning, use TeamGameLog as well, which should be most times..',
                  Columns.TeamInfo,
                  SpecialInstructions.TeamInfo)
 
