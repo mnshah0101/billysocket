@@ -36,6 +36,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 
 socketio = SocketIO(app, cors_allowed_origins='*')
 
+global_bucket = None 
 
 
 
@@ -59,11 +60,13 @@ def chat(data):
     print(f'IP: {ip}')
     print(f'Session: {session}')
 
-    
+    global global_bucket
+
     while True:
         try:
             # Call the question_chooser function to get the bucket and question
             bucket, question = question_chooser('anthropic', message)
+            global_bucket = bucket
 
             print(f'Bucket: {bucket}')
             print(f'Question: {question}')
@@ -162,7 +165,7 @@ def chat(data):
             next_answer = next(answer)
             answer_string += next_answer
             emit('billy', {'response': answer_string,
-                 'type': 'answer', 'status': 'generating'})
+                 'type': 'answer', 'status': 'generating', 'bucket': bucket})
         except Exception as e:
             answerGenerating = False
 
@@ -186,6 +189,7 @@ def store_query():
             return jsonify({'error': f'{field} Check not found in request data'}), 400
 
     question = data['question']
+    bucket = global_bucket
     answer = data['answer']
     correct = data['correct']
     category = data['category']
@@ -215,6 +219,7 @@ def store_query():
             new_entry = {
                 "question": question,
                 "answer": answer,
+                "bucket": bucket,
                 "correct": correct,
                 "category": category,
                 "sql": sql,
@@ -299,6 +304,8 @@ def chat_http(data):
             answerGenerating = False
             
     return answer_string
+
+
 
 
 
