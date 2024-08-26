@@ -52,8 +52,13 @@ ByeWeek = Table('ByeWeek',
                 Columns.ByeWeek,
                 SpecialInstructions.ByeWeek)
 
+Outcomes = Table('Outcomes',
+                  "This bucket is to figure out the outcomes of betting props, including payouts, the lines, and the bet value.",
+                  Columns.Outcomes,
+                  SpecialInstructions.BettingOutcomes)
 
-Billy = PromptEngineer([TeamGameLog, PlayerGameLog, PlayByPlay, ExpertAnalysis, BettingProps, ByeWeek, Conversation, NoBucket])
+
+Billy = PromptEngineer([TeamGameLog, PlayerGameLog, PlayByPlay, ExpertAnalysis, BettingProps, ByeWeek, Conversation, NoBucket, Outcomes])
                    
 
 

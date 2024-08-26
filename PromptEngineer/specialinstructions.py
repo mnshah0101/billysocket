@@ -103,6 +103,16 @@ ByeWeekInstructions = Prompt(
     """
 )
 
+BettingOutcomesInstructions = Prompt(
+    'BettingOutcomes',
+    "SpecialInstructions",
+    """
+    The name of the table is `outcomes`.
+    Be careful of the type of the columns, as some are integers, double precision and some are strings.
+    The outcomes map to a Betting Prop. 
+    """
+)
+
 
 class SpecialInstructions:
     def __init__(self):
@@ -111,6 +121,7 @@ class SpecialInstructions:
         self.PlayByPlay = PlayByPlayInstructions
         self.BettingProps = BettingPropsInstructions
         self.ByeWeek = ByeWeekInstructions
+        self.BettingOutcomes = BettingOutcomesInstructions
         
 
    

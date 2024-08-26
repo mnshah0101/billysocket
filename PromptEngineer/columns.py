@@ -636,8 +636,7 @@ BettingPeriodType (text) - Could be ['Full Game', 'First Half', '1st Quarter', '
 PlayerName (text) - Player name if player prop or None
 Created (text)
 Updated (text)
-AvailableSportsbooks (text) - Looks like [{{'SportsbookID': 8, 'Name': 'FanDuel'}}, {{'SportsbookID': 7, 'Name': 'DraftKings'}}, {{'SportsbookID': 22, 'Name': 'Consensus'}}, {{'SportsbookID': 24, 'Name': 'BetMGM'}}, {{'SportsbookID': 19, 'Name': 'Caesars'}}], which is an array of dictionaries, each containing the SportsbookID and its betting stats.
-BettingOutcomes (text) - Looks like {{'BettingOutcomeID': 94547450, 'BettingMarketID': 470742, 'BettingOutcomeTypeID': 2, 'BettingOutcomeType': 'Away', 'PayoutAmerican': -105, 'PayoutDecimal': 1.9523809523809523, 'Value': 1.5, 'Participant': 'Green Bay Packers', 'IsAvailable': True, 'IsAlternate': False, 'Created': '2024-06-08T13:42:52', 'Updated': '2024-08-11T22:44:41', 'Unlisted': None, 'TeamID': 12, 'PlayerID': None, 'GlobalTeamID': 12, 'SportsbookUrl': 'https://sportsbook.fanduel.com/football/nfl/green-bay-packers-@-philadelphia-eagles-33181919', 'IsInPlay': False, 'SportsbookMarketID': '424043453', 'SportsbookOutcomeID': '50192', 'SportsBook': {{'SportsbookID': 8, 'Name': 'FanDuel'}}}}] - where each dictionary contains the BettingOutcomeID, BettingMarketID, BettingOutcomeTypeID, BettingOutcomeType, PayoutAmerican, PayoutDecimal, Value, Participant, IsAvailable, IsAlternate, Created, Updated, Unlisted, TeamID, PlayerID, GlobalTeamID, SportsbookUrl, IsInPlay, SportsbookMarketID, SportsbookOutcomeID, and SportsBook.
+AvailableSportsbooks (text) - An array of the names of the available sportsbooks, like ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'Consensus']
 AvailableSportsbooksNames (text) - An array of the names of the available sportsbooks, like ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'Consensus']
 Date (text)
 AwayTeam (text)
@@ -661,7 +660,31 @@ Team (text)
 
 
 
+BettingOutcomesColumns = Prompt("BettingOutcomes", "Columns",
+"""
+GlobalTeamID (double precision)
+PayoutDecimal (double precision)
+IsInPlay (boolean)
+SportsbookMarketID (double precision)
+SportsbookOutcomeID (double precision)
+BettingOutcomeID (bigint) - The unique ID of the betting outcome.
+Value (double precision)
+BettingOutcomeTypeID (double precision)
+IsAvailable (boolean)
+IsAlternate (boolean)
+BettingMarketID (bigint) - The unique ID of the betting market.
+PayoutAmerican (bigint)
+Unlisted (double precision)
+TeamID (double precision)
+PlayerID (double precision) - Player ID if related to a player prop.
+SportsBook (text)
+BettingOutcomeType (text)
+Participant (text)
+Created (text)
+Updated (text)
+SportsbookUrl (text)
 
+""")
 
 class Columns:
     def __init__(self):
@@ -669,6 +692,7 @@ class Columns:
         self.PlayerGameLog = PlayerLogColumns
         self.PlayByPlay = PlayByPlayColumns
         self.BettingProps = BettingPropsColumns
+        self.BettingOutcomes = BettingOutcomesColumns
         self.ByeWeek = ByeWeekColumns
 
    
