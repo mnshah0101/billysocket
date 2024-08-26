@@ -42,6 +42,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 
 socketio = SocketIO(app, cors_allowed_origins='*')
 
+global global_bucket
 
 
 
@@ -66,7 +67,7 @@ def chat(data):
     print(f'Session: {session}')
 
 
-    
+    global global_bucket
 
     
     while True:
@@ -74,7 +75,7 @@ def chat(data):
             bucket, sql = Billy.get_query(message)
 
             print(f'Bucket: {bucket}')
-            
+            global_bucket = bucket
             if bucket =='Conversation':
                 emit('billy', {'response':sql, 'type': 'answer', 'status': 'done'})
                 return
@@ -190,6 +191,7 @@ def store_query():
 
     question = data['question']
     answer = data['answer']
+    bucket = global_bucket
     correct = data['correct']
     category = data['category']
     sql = data['sql']
@@ -218,6 +220,7 @@ def store_query():
             new_entry = {
                 "question": question,
                 "answer": answer,
+                "bucket": bucket,
                 "correct": correct,
                 "category": category,
                 "sql": sql,
