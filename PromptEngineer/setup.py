@@ -13,7 +13,7 @@ SpecialInstructions = SpecialInstructions()
 #create tables
 
 TeamGameLog = Table('TeamGameLog',
-                    " This bucket is for questions that can be answered by looking at Team Game Logs in the NFL. This also includes information about  weather. This include against the spread stats.",
+                    " This bucket is for questions that can be answered by looking at Team Game Logs in the NFL. This also includes information about  weather. This include against the spread stats. Also use this for who won divisions and conferences for records and whatnot. The team info will almost always need this table.",
                     Columns.TeamGameLog,
                     SpecialInstructions.TeamGameLog)
 
