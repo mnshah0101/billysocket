@@ -9,18 +9,19 @@ from utils.answer_parser import get_answer
 from flask_socketio import SocketIO
 from flask_socketio import send, emit
 from utils.player_and_team import player_and_team_log_get_answer
+from utils.props import props_log_get_answer
 from utils.perplexity import ask_expert
 from PromptEngineer.setup import Billy
 from flask import request
 from supabase import create_client, Client
 import dotenv
 import os
+import logging
 
 
 
 
 dotenv.load_dotenv()
-
 
 
 
@@ -65,14 +66,14 @@ def chat(data):
 
     print(f'IP: {ip}')
     print(f'Session: {session}')
-
-
+    
     global global_bucket
 
-    
     while True:
         try:
-            bucket, sql = Billy.get_query(message)
+            # Call the question_chooser function to get the bucket and question
+            bucket, question = question_chooser('anthropic', message)
+            global_bucket = bucket
 
             print(f'Bucket: {bucket}')
             global_bucket = bucket
@@ -115,7 +116,22 @@ def chat(data):
 
             raw_query = sql
 
-            
+
+            if bucket == 'TeamGameLog':
+                raw_query = team_log_get_answer('anthropic', question)
+            elif bucket == 'PlayerGameLog':
+                raw_query = player_log_get_answer('anthropic', question)
+            elif bucket == 'PlayByPlay':
+                raw_query = play_by_play_get_answer('anthropic', question)
+            elif bucket == 'TeamAndPlayerLog':
+                raw_query = player_and_team_log_get_answer(
+                    'anthropic', question)
+            elif bucket == 'Props':
+                raw_query = props_log_get_answer(
+                    'anthropic', question
+                )
+
+            print(bucket)
             
             print(f'Raw Query: {raw_query}')
                 
@@ -166,7 +182,7 @@ def chat(data):
             next_answer = next(answer)
             answer_string += next_answer
             emit('billy', {'response': answer_string,
-                 'type': 'answer', 'status': 'generating'})
+                 'type': 'answer', 'status': 'generating', 'bucket': bucket})
         except Exception as e:
             answerGenerating = False
 
@@ -190,6 +206,7 @@ def store_query():
             return jsonify({'error': f'{field} Check not found in request data'}), 400
 
     question = data['question']
+    bucket = global_bucket
     answer = data['answer']
     bucket = global_bucket
     correct = data['correct']
@@ -239,7 +256,7 @@ def store_query():
         print(f"Error interacting with Supabase: {e}")
         return jsonify({'error': 'Could not store/update query', 'details': str(e)}), 500
 
-@app.route('/chat')
+@app.route('/chat',  methods=["POST"])
 def chat_http(data):
     if 'message' not in data:
         emit('billy', {'response': 'I am sorry, I do not have an answer for that question.',
@@ -273,6 +290,7 @@ def chat_http(data):
             elif bucket == 'TeamAndPlayerLog':
                 raw_query = player_and_team_log_get_answer(
                     'anthropic', question)
+                
 
             # Extract the SQL query from the raw_query
             query = extract_sql_query(raw_query)
@@ -305,6 +323,8 @@ def chat_http(data):
             answerGenerating = False
             
     return answer_string
+
+
 
 
 

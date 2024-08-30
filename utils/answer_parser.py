@@ -34,6 +34,9 @@ This is the result of the sql query:
 
 Please answer the question: {user_question}
 
+<special_instructions> 
+If you are given urls as part of the answer, make sure to include the proper markdown in your response to display for the user. All urls should be properly hyperlinked. Bold and underline all the sportsbook links, put the sportsbook name and hyperlink that.
+</special_instructions>
 
 Format the response to look good on a chat interface. Make sure to be concise and clear. Do not include any special characters. Use your best judgement to answer the question based on the information in a friendly and helpful manner.
 
