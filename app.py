@@ -75,6 +75,14 @@ def chat(data):
             bucket, sql = Billy.get_query(message)
 
             print(f'Bucket: {bucket}')
+            print(f'SQL: {sql}')
+        
+
+            if "Error:" in sql:
+                bucket = 'ExpertAnalysis'
+                sql = message
+
+
             global_bucket = bucket
             if bucket =='Conversation':
                 emit('billy', {'response':sql, 'type': 'answer', 'status': 'done'})

@@ -6,23 +6,47 @@ TeamLogInstructions = Prompt(
     'TeamGameLog',
     "SpecialInstructions",
     """
-    The name of the table is `teamlog`.
-    
-    - Reference the `Team` column and the `HomeOrAway` column instead of `HomeTeam` and `AwayTeam`. The `Opponent` column will have the opposite side.
-    - To calculate "Against the Spread" (ATS), determine whether a team has covered the point spread using the following formula:
+    The team is always short hand, such as WAS for Washington or BAL for Baltimore.
+    The name of the table is teamlog.
+    Instead of HomeTeam and AwayTeam, reference the Team column and the HomeOrAway Column, The Opponent column will have the opposite side.
+    To calculate "Against the Spread" (ATS), you need to determine whether a team has covered the point spread in a game. The formula for ATS can be derived using the team score, opponent score, and point spread as follows:
 
-    **Formula:**
-    - Calculate the Cover Margin: `CoverMargin = (Score + PointSpread) - OpponentScore`
-    - Determine ATS Result:
-        - If `CoverMargin > 0`, the team covered the spread.
-        - If `CoverMargin < 0`, the team did not cover the spread.
-        - If `CoverMargin = 0`, it is a push (no winner against the spread).
-    - A negative point spread means the team is favored to win, and a positive point spread means the team is the underdog.
-    - To get the last game of a team, use `MAX(GameKey)`.
 
-    **Note:**
-    - All column names must be surrounded by double quotes, such as `"Name"` or `"Team"`.
-    - There is no `weather` column, so use a combination of temperature, humidity, and wind speed to determine the weather conditions of the game.
+    Formula:
+    Calculate the Cover Margin:
+    Cover Margin=(Score+PointSpread)-OpponentScore
+    Determine ATS Result:
+
+
+    If Cover Margin > 0, the team covered the spread.
+    If Cover Margin < 0, the team did not cover the spread.
+    If Cover Margin = 0, it is a push (no winner against the spread).
+
+
+    A negative point spread means the team is favored to win, and a positive point spread means the team is the underdog.
+
+
+
+
+    Only respond with the sql query, no explanation or anything else. Encompass the sql query with
+    ```sql
+
+
+    ```
+
+
+
+
+    A clever way to get the last game of a team is to do MAX(GameKey), which will give you the last game of the team.
+
+
+
+
+    All columns must be surrounded by double quotes, such as "Name" or "Team".
+
+
+    There is no weather column, so use a combination of temperature, humidity, and wind speed to determine the weather conditions of the game.
+
     """
 )
 
@@ -32,26 +56,64 @@ PlayerLogInstructions = Prompt(
     """
     The name of the table is `playerlog`.
     
-    - Reference the `Team` column and the `HomeOrAway` column instead of `HomeTeam` and `AwayTeam`. The `Opponent` column will have the opposite side.
-    - Infer player names from limited data. For example, if the user says "Kelce", infer "Travis Kelce".
-    - To find games where two players have played against each other, join the table on the `GameKey` where the `Name` matches the player.
-    - To calculate "Against the Spread" (ATS), use the following formula:
+    The Team is always short hand, such as WAS for Washington or BAL for Baltimore.
+    Instead of HomeTeam and AwayTeam, reference the Team column and the HomeOrAway Column, The Opponent column will have the opposite side.
+    You will have to infer player names from little data from your understanding of the NFL. For example, if the user only says Kelce, you have to infer the name Travis Kelce
+    To find games where two players have played against each other, you can join the table on the GameKey where the Name matches the player.
+    To calculate "Against the Spread" (ATS), you need to determine whether a team has covered the point spread in a game. The formula for ATS can be derived using the team score, opponent score, and point spread as follows:
 
-    **Formula:**
-    - Calculate the Cover Margin: `CoverMargin = (Score + PointSpread) - OpponentScore`
-    - Determine ATS Result:
-        - If `CoverMargin > 0`, the team covered the spread.
-        - If `CoverMargin < 0`, the team did not cover the spread.
-        - If `CoverMargin = 0`, it is a push (no winner against the spread).
-    - Use `MIN(GameKey)` to get the earliest game and `MAX(GameKey)` to get the latest game.
 
-    **Additional Notes:**
-    - Rookies have a value of `2` in the `Experience` column.
-    - A player is injured if the `InjuryStatus` is `Doubtful`, `Out`, or `Questionable`.
-    - Use the `DISTINCT` keyword when necessary to avoid duplicate data.
-    - To see how many games a player missed, count the number of games where the `InjuryStatus` is 'Out', 'Doubtful', or 'Questionable'.
-    - Be careful of periods in player names, e.g., "T.J. Watt" in the database.
-    - Use a combination of temperature, humidity, and wind speed to determine the weather conditions, as there is no `weather` column.
+    Formula:
+    Calculate the Cover Margin:
+    Cover Margin=(Score+PointSpread)-OpponentScore
+    Determine ATS Result:
+
+
+    If Cover Margin > 0, the team covered the spread.
+    If Cover Margin < 0, the team did not cover the spread.
+    If Cover Margin = 0, it is a push (no winner against the spread).
+
+
+
+
+    You can use MIN(GameKey) to get the earliest game and MAX(GameKey) to get the latest game.
+
+
+    Remember, rookies have a value of 2 in the Experience column.
+
+
+    A player is injured if the InjuryStatus is Doubtful, Out, or Questionable.
+
+
+    Make sure to use the DISTINCT keyword when necessary to avoid duplicate data.
+
+
+    Usually, even when a player is out or injured, they will have a record in the database. However, sometimes, they might not have a record. Therefore to see how many games a player missed, you can use 17 (or whatever number) - COUNT(DISTINCT GameKey where the player played).
+
+
+    Be careful of periods in the player name. For example, TJ Watt is T.J. Watt in the database.
+
+
+    To see how many games a played missed in the regular season, you can use 17 - COUNT(DISTINCT GameKey where the player played).
+    Use this logic
+
+
+
+
+    Only respond with the sql query, no explanation or anything else. Encompass the sql query with
+    ```sql
+
+
+    ```
+
+
+    All columns must be surrounded by double quotes, such as "Name" or "Team".
+
+
+    There is no weather column, so use a combination of temperature, humidity, and wind speed to determine the weather conditions of the game.
+
+
+
     """
 )
 
@@ -59,29 +121,42 @@ PlayByPlayInstructions = Prompt(
     'PlayByPlay',
     "SpecialInstructions",
     """
-    The name of the table is `playbyplay`.
-
-    - Columns to use for scoring plays: `Season`, `Week`, `HomeTeam`, `AwayTeam`, `Date`, and `GameKey`.
+    - Use the table `playbyplay`.
+    - Columns to use for scoring plays: Season, Week, HomeTeam, AwayTeam, Date, and GameKey.
     - Use the `PlayTime` column for filtering all plays by date (format: `YYYY-MM-DDTHH:MM:SS` UTC).
     - Identify players by inferring full names from partial mentions (e.g., "Kelce" implies "Travis Kelce").
-    - Use double quotes for column names, such as `"RushingYards"`.
-    - Avoid using specific columns unless the play is a scoring play: `GameKey`, `SeasonType`, `ScoringPlayID`, `Season`, `Week`, `AwayTeam`, `HomeTeam`, `Date`, `Sequence_scoring`, `Team_scoring`, `Quarter`, `TimeRemaining`, `AwayScore`, `HomeScore`, `ScoreID`.
-    - Use `DISTINCT` for `PlayID` to make sure you are not counting the same play multiple times.
-    - Calculate percentages using attempted and made columns (e.g., `ExtraPointsMade / ExtraPointsAttempted`).
-    - To find WR1, look for the player with the most receiving yards in a season for a team.
-    - Scoring plays only count touchdowns. For extra points, field goals, and safeties, use other columns to determine if it is a scoring play.
-    - Since you don't have `GameKey`, use `Team` and `Date` to determine the game.
-
-    **Instructions:**
-    - Do not use `GameKey`, `SeasonType`, `ScoringPlayID`, `Season`, `Week`, `AwayTeam`, `HomeTeam`, `Date`, `Sequence_scoring`, `Team_scoring`, `Quarter`, `TimeRemaining`, `AwayScore`, `HomeScore`, or `ScoreID` in your query unless it is a scoring play.
-    - In the slot means the direction is `Middle`.
-    - If the question cannot be answered with the provided data, return: "Error: Cannot answer question with data provided."
-    - For player names, if there is an apostrophe in the name, such as O'Shaughnessy, use the "" to surround the name, and use the single apostrophe in the query, such as "O'Shaughnessy".
+    - Use double quotes for column names (e.g., `"RushingYards"`).
+    - Avoid using specific columns unless the play is a scoring play: GameKey, SeasonType, ScoringPlayID, Season, Week, AwayTeam, HomeTeam, Date, Sequence_scoring, Team_scoring, Quarter, TimeRemaining, AwayScore, HomeScore, ScoreID.
+    - Use `DISTINCT` for `PlayID` to handle duplicate plays.
+    - Calculate percentages using attempted and made columns (e.g., `ExtraPointsMade` / `ExtraPointsAttempted`).
+    - A way to get WR1 is to look for the player with the most receiving yards in a season for a team.
+    - The Season, Week, HomeTeam, AwayTeam, Date, and GameKey columns are only available for scoring plays.
+    - To filter the data for all plays by date, you can use the PlayTime column. The PlayTime column is in the format of 2022-09-11T22:21:49 and is in UTC time.
+    - Scoring plays only count touchdowns, so for extra points, field goals, and safeties you must use other columns to determine if it is a scoring play.
+    - Since you don't have GameKey, you can use Team, nd Date to determine the game.
 
 
 
-    **Note:**
-    - The database is a PostgreSQL database, and the data only goes back to the 2015 season.
+
+    Remember, do not use GameKey, SeasonType, ScoringPlayID, Season, Week, AwayTeam, HomeTeam, Date, Sequence_scoring, Team_scoring, Quarter, TimeRemaining, AwayScore, HomeScore, or ScoreID in your query unless it is a scoring play.
+
+
+    All columns must be surrounded by double quotes, such as
+    In the slot means the direction is Middle.
+
+
+    If the question cannot be answered with the provided data, return: "Error: Cannot answer question with data provided."
+
+
+    Respond only with the SQL query, enclosed in:
+
+
+    ```sql
+    <SQL_QUERY_HERE>
+    ```
+
+    Note: The database is a PostgreSQL database, and the data only goes back to the 2015 season.
+
     """
 )
 

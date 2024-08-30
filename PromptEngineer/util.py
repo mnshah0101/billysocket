@@ -78,7 +78,7 @@ class PromptEngineer:
         # Define the prompt template with dynamically generated bucket descriptions
         prompt_template = f"""
         <prompt>
-        You are Billy, a chatbot that answers questions about the NFL.
+        You are Billy, an expert chatbot that answers questions about the NFL.
         You will be given a chat history with a user with a question at the end about the NFL. You are to choose which buckets it best fits in. You will also correct the grammar of the question.
 
         Remember, the current question is the last line of the chat history. 
@@ -100,11 +100,16 @@ class PromptEngineer:
 
         This is the user inputted question: {{user_question}}
 
-        If you need the most recently played season, it is the 2023 season.  If no season is specified, assume the most recent season and the Season Type to be the regular season unless said otherwise.
+        If you need the most recently played season with full data, it is the 2023 season. We are in August of 2024 right now. If no season is specified, assume the most recent season and the Season Type to be the regular season unless said otherwise. There is betting data for 2024 season.
 
-        The ExpertAnalysis is the fall back tool, if you cannot answer the question with the data provided, you can use the ExpertAnalysis bucket to provide an answer. Use it sparingly, as most questions can be answered with the data provided.
+        Remember, the tables have a lot of information, so if you think there is a chance the question could be answered by looking at the data, choose the appropriate bucket. If the question is not about the NFL choose NoBucket. If the question is not clear, make it more specific and easier to understand.
 
-        If you choose Conversation, instead of a question in the question field, put the natural conversation you would have with the user. 
+
+        If you choose NoBucket, instead of a question in the question field, put the reason why it is NoBucket. Remember this is going to be shown to the user, so make sure it is clear and concise. If it is too vague, ask for clarification. Use your knowledge of the NFL to to see if a question is too vague.
+
+
+        If you choose Conversation, instead of a question in the question field, put the natural response to that question or conversation.
+
         </prompt>
         """
 
@@ -222,10 +227,12 @@ class PromptEngineer:
             User:
 
             <instructions>
-            You are a data analyst for an NFL team and you have been asked to generate a SQL query to answer the following question. You do not have to completely answer the question, just generate the SQL query to answer the question, and the result will be processed. Do your best to answer the question and do not use placeholder information. The question is:
-            `{question}`
+        You are a data analyst for an NFL team and you have been asked to generate a SQL query to answer the following question. You do not have to completely answer the question, just generate the SQL query to answer the question, and the result will be processed. Do your best to answer the question and do not use placeholder information. 
+        The question is: `{question}`
 
             </instructions>
+
+            
 
             I will now provide a series of tables and columns with special instructions for each table to help you answer the question. 
 
@@ -251,11 +258,16 @@ class PromptEngineer:
 
             If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided."
 
-            This is a postgres database. Do not create any new columns or tables. Only use the columns that are in the table.
-            The date is {time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())}. Use this to reference the current date in your query, the last season there is data for, which is the 2023 season, or the newest season.
+
+            This is a postgres database. 
+            50
+
+            Besides the type CAST syntax, you can use the following syntax to convert a value of one type into another (cast :: operator):
+            SELECT ROUND(value::numeric, 2) from table_x; 
+            Notice that the cast syntax with the cast operator (::) is PostgreSQL-specific and does not conform to the SQL standard.
+            The date is {time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())}. Use this to reference the current date in your query, the last season there is data for, which is the 2023 season, or the newest season. For betting data use the 2024 season. If no season is specified, assume the most recent season and the Season Type to be the regular season unless said otherwise.
             Only use the columns that are in the table. Do not create any new columns or tables.
             Assistant: 
-
             """
         
         print("Raw LLM Prompt:")
@@ -274,7 +286,7 @@ class PromptEngineer:
                     print("key not given", e)
 
             elif model == 'anthropic':
-                llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620', temperature=0.1)
+                llm = ChatAnthropic(model_name='claude-3-5-sonnet-20240620', temperature=0.5)
 
             print(llm)
             llm_chain = sql_prompt | llm
