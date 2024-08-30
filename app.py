@@ -11,6 +11,7 @@ from flask_socketio import send, emit
 from utils.player_and_team import player_and_team_log_get_answer
 from utils.props import props_log_get_answer
 from utils.perplexity import ask_expert
+from PromptEngineer.setup import Billy
 from flask import request
 from supabase import create_client, Client
 import dotenv
@@ -32,12 +33,17 @@ CORS(app)
 # Initialize Supabase client
 supabase_url = os.environ.get("SUPABASE_URL")
 supabase_key = os.environ.get("SUPABASE_KEY")
+if not supabase_url or not supabase_key:
+    raise EnvironmentError(
+        f"Missing supabase keys")
+
+
 supabase: Client = create_client(supabase_url, supabase_key)
 
 
 socketio = SocketIO(app, cors_allowed_origins='*')
 
-global_bucket = None 
+global global_bucket
 
 
 
@@ -60,7 +66,7 @@ def chat(data):
 
     print(f'IP: {ip}')
     print(f'Session: {session}')
-
+    
     global global_bucket
 
     while True:
@@ -70,26 +76,29 @@ def chat(data):
             global_bucket = bucket
 
             print(f'Bucket: {bucket}')
-            print(f'Question: {question}')
-            
+            global_bucket = bucket
             if bucket =='Conversation':
-                emit('billy', {'response':question, 'type': 'answer', 'status': 'done'})
+                emit('billy', {'response':sql, 'type': 'answer', 'status': 'done'})
                 return
 
             if bucket == 'NoBucket':
-                if question == '':
+                if sql == '':
                     emit('billy', {
                         'response': "I am sorry, I do not have an answer for that question.", 'type': 'answer', 'status': 'done'})
                     return
 
                 emit('billy', {
-                        'response':question, 'type': 'answer', 'status': 'done'})
+                        'response':sql, 'type': 'answer', 'status': 'done'})
                 return
             
             if bucket == 'ExpertAnalysis':
+                print("Expert Analysis running")
+                print(sql)
                 emit('billy', {'response': '',
                                'type': 'query', 'status': 'generating'})
-                generator = ask_expert(question)
+                
+                
+                generator = ask_expert(sql)
                 answer = ''
                 generating_answer = True
                 while generating_answer:
@@ -105,7 +114,8 @@ def chat(data):
                         
                 return answer
 
-            raw_query = None
+            raw_query = sql
+
 
             if bucket == 'TeamGameLog':
                 raw_query = team_log_get_answer('anthropic', question)
@@ -128,7 +138,7 @@ def chat(data):
             if 'error' and 'cannot' in raw_query.lower():
                 emit('billy', {'response': '',
                                'type': 'query', 'status': 'generating'})
-                generator = ask_expert(question)
+                generator = ask_expert(sql)
                 answer = ''
                 generating_answer = True
                 while generating_answer:
@@ -162,7 +172,7 @@ def chat(data):
 
    
 
-    answer = get_answer('openai', question, query, result)
+    answer = get_answer('openai', sql, query, result)
 
     answerGenerating = True
     answer_string = ''
@@ -198,6 +208,7 @@ def store_query():
     question = data['question']
     bucket = global_bucket
     answer = data['answer']
+    bucket = global_bucket
     correct = data['correct']
     category = data['category']
     sql = data['sql']
