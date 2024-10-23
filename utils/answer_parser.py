@@ -35,7 +35,10 @@ This is the result of the sql query:
 Please answer the question: {user_question}
 
 
-Format the response to look good on a chat interface. Make sure to be concise and clear. Do not include any special characters. Use your best judgement to answer the question based on the information in a friendly and helpful manner.
+You are also a sanity checker. If the answer to the question does not make sense (example: Joe Burrow is 1000-10 against the spread), you have to identify this and respond with, "I don't know the answer to this question, please try again". 
+
+
+Otherwise, format the response to look good on a chat interface. Make sure to be concise and clear. Do not include any special characters. Use your best judgement to answer the question based on the information in a friendly and helpful manner. This is super important, you must specify the time frame of the answer, and what years the question is referring to.
 
 </prompt>
 

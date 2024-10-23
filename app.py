@@ -77,8 +77,7 @@ def chat(data):
             print(f'Bucket: {bucket}')
             print(f'SQL: {sql}')
         
-
-            if "Error:" in sql:
+            if "Data Error:" in sql:
                 bucket = 'ExpertAnalysis'
                 sql = message
 
@@ -104,10 +103,12 @@ def chat(data):
                 emit('billy', {'response': '',
                                'type': 'query', 'status': 'generating'})
                 
+            
                 
                 generator = ask_expert(sql)
                 answer = ''
                 generating_answer = True
+                next_answer = ''
                 while generating_answer:
                     try:
                         next_answer = next(generator)
@@ -155,6 +156,8 @@ def chat(data):
 
             # Execute the SQL query
             result = execute_query(query)
+
+            print(f'Result: {result}')
 
             # If execution reaches here, the query was successful, break the loop
             break

@@ -28,27 +28,30 @@ PlayByPlay = Table('PlayByPlay',
                      Columns.PlayByPlay,
                    SpecialInstructions.PlayByPlay)
 
+
+Futures = Table('Futures',
+                "This bucket is for questions that can be answered by looking at futures data for teams or players. This is good if the user inquires about futures information for a specific player or team this upcoming season.",
+                Columns.Futures,
+                SpecialInstructions.Futures)
+Props = Table('Props',
+              'This bucket is for questions that can be answered by looking at betting props for teams or players. This is good if the user inquires about betting information for a specific player or team this upcoming season.',
+              Columns.Props,
+              SpecialInstructions.Props)
+
+
 ExpertAnalysis = Table('ExpertAnalysis',
-                       "This bucket is for questions that require expert analysis or opinion. This is good for questions that require a more subjective answer, such as who the best player in the NFL is or what the best team in the NFL is . This is also good for questions that require a more in -depth analysis, such as what the best strategy is for a team to win the Super Bowl. This can also provide real time analysis of games or players, or odds for future/current games.",
+                       "This bucket is for questions that require expert analysis or opinion. This is good for questions that require a more subjective answer, such as who the best player in the NFL is or what the best team in the NFL is . This is also good for questions that require a more in -depth analysis, such as what the best strategy is for a team to win the Super Bowl. This can also provide real time analysis of games or players, or odds for future/current games. This tool is also good for non-betting related questions about upcoming games or games that have not happened yet.",
                        '',
                        '')
 Conversation = Table('Conversation',
-                     "This bucket is if the user is just trying to have a conversation with Billy or ask a question that doesn't fit into any of the other buckets.",
+                     "This bucket is if the user is just trying to have a conversation with Billy. ",
                      '',
                      '')
 
 
 
 
-ByeWeek = Table('ByeWeek',
-                "This bucket is to figure out what week a team has a bye week.",
-                Columns.ByeWeek,
-                SpecialInstructions.ByeWeek)
-
-
-
-
-Billy = PromptEngineer([TeamGameLog, PlayerGameLog, PlayByPlay, ExpertAnalysis, ByeWeek, Conversation])
+Billy = PromptEngineer([TeamGameLog, PlayerGameLog, PlayByPlay, Futures, Props, ExpertAnalysis, Conversation])
                    
 
 

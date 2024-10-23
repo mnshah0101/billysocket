@@ -74,12 +74,13 @@ class PromptEngineer:
     def choose_tables(self, question):
         # Generate bucket descriptions dynamically from the tables
         bucket_descriptions = self.generate_bucket_descriptions()
+        cuurent_date = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
 
         # Define the prompt template with dynamically generated bucket descriptions
         prompt_template = f"""
         <prompt>
-        You are Billy, an expert chatbot that answers questions about the NFL.
-        You will be given a chat history with a user with a question at the end about the NFL. You are to choose which buckets it best fits in. You will also correct the grammar of the question.
+        You are Billy, a chatbot that answers questions about the NFL.
+        You will be given a chat history with a user with a question at the end about the NFL. You are to choose bucket or buckets that best fits the question to answer it. You will also correct the grammar of the question.
 
         Remember, the current question is the last line of the chat history. 
 
@@ -88,28 +89,33 @@ class PromptEngineer:
         {bucket_descriptions}
 
         You will also correct the question and make it grammatically correct. Do not change anything else about the question.
-        You will respond in the following format:
+        By the way, the database does not have weather data, just temperature data.
+        You may have to use multiple buckets to answer the question.
 
-        Buckets: BucketName1, BucketName2, ...
+        You will response in the following format, where there are multiple buckets:
+        Bucket: BucketName1
+        Bucket: BucketName2
+        Bucket: BucketName3
         Question: Corrected Question
 
         <example_response>
-        Buckets: TeamGameLog, PlayerGameLog
+        Bucket: TeamGameLog
         Question: How many games did the 49ers win in 2005 regular season?
         </example_response>
 
         This is the user inputted question: {{user_question}}
 
-        If you need the most recently played season with full data, it is the 2023 season. We are in August of 2024 right now. If no season is specified, assume the most recent season and the Season Type to be the regular season unless said otherwise. There is betting data for 2024 season.
+        If you need the most recently played season, it is the 2024 season. We are in the midst of the 2024 season, so we have data for the weeks that have been played. For betting props, the only available information is in 2024 and we have future week data as well, but its not totally complete for some of the later weeks. If no season is specified, assume the most recent season and the Season Type to be the regular season unless said otherwise. For all props, the data is for 2024. For current season, use 2024.
+
 
         Remember, the tables have a lot of information, so if you think there is a chance the question could be answered by looking at the data, choose the appropriate bucket. If the question is not about the NFL choose NoBucket. If the question is not clear, make it more specific and easier to understand.
 
-
         If you choose NoBucket, instead of a question in the question field, put the reason why it is NoBucket. Remember this is going to be shown to the user, so make sure it is clear and concise. If it is too vague, ask for clarification. Use your knowledge of the NFL to to see if a question is too vague.
 
-
-        If you choose Conversation, instead of a question in the question field, put the natural response to that question or conversation.
-
+        If you choose Conversation, instead of a question in the question field, put the natural conversation you would have with the user. That is going to be returned to the user, so make sure it is clear and concise.
+        If you need the current date, it is {cuurent_date}. If the questions mentions today, or tonight or anything of the sort, include this date in the response.
+        We just finished week 5 of the 2024 season and are currently in week 6. The 2024 season is the most recent season. We only have performance data up to the weeks that have been played, so use internet tool when asking for weeks that haven't been played. For props, we have data for the 2024 season and future weeks, but it is not totally complete for some of the later weeks. 
+        Remember, players may have moved teams since when you were last trained, so don't assume you know where players play all the time and still choose an appropriate bucket.
         </prompt>
         """
 
@@ -148,9 +154,8 @@ class PromptEngineer:
 
             # Iterate over each line and extract buckets and question
             for line in lines:
-                if line.startswith("Buckets:"):
-                    buckets = [bucket.strip()
-                               for bucket in line.split("Buckets:")[1].split(",")]
+                if line.startswith("Bucket:"):
+                    buckets.append(line.split("Bucket: ")[1].strip())
                 elif line.startswith("Question:"):
                     question = line.split("Question:")[1].strip()
 
@@ -173,7 +178,6 @@ class PromptEngineer:
         similar_question, query = self.find_similar_question_sql(question)
 
         
-
 
 
         return f"""
@@ -256,19 +260,30 @@ class PromptEngineer:
             {example}
             </example_query>
 
-            If the question cannot be answered with the data provided, please return the string "Error: Cannot answer question with data provided."
+            If the question cannot be answered with the data provided, please return the string "Data Error: Cannot Answer Question With Data Provided."
 
 
             This is a postgres database. 
-            50
+
 
             Besides the type CAST syntax, you can use the following syntax to convert a value of one type into another (cast :: operator):
             SELECT ROUND(value::numeric, 2) from table_x; 
+            The default SeasonType is Regular Season or 1. If the question is about a different SeasonType, please specify in the query. The default season is 2024.
             Notice that the cast syntax with the cast operator (::) is PostgreSQL-specific and does not conform to the SQL standard.
-            The date is {time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())}. Use this to reference the current date in your query, the last season there is data for, which is the 2023 season, or the newest season. For betting data use the 2024 season. If no season is specified, assume the most recent season and the Season Type to be the regular season unless said otherwise.
+            All columns should be
+            The date is {time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())}. Use this to reference the current date in your query, 
+            the last season there is data for, which is the 2024 season, or the newest season. For betting data use the 2024 season. If no season is specified, assume the most recent season, which is 2024 and the Season Type to be the regular season unless said otherwise.
+            If the question cannot be answered with the data provided, return the string "Error: Cannot Be Answered".
+            Make sure you surround columns with double quotes since it is case sensitive. An example is p."PlayerName". 
             Only use the columns that are in the table. Do not create any new columns or tables.
-            Assistant: 
             """
+        
+        add_line = os.getenv('ADD_LINE')
+
+        raw_llm_prompt += add_line
+        raw_llm_prompt += f"\nAssitant: "
+        
+
         
         print("Raw LLM Prompt:")
         print(raw_llm_prompt)
@@ -306,6 +321,9 @@ class PromptEngineer:
 
     def get_query(self, question):
         tables, question = self.choose_tables(question)
+        print("This is the question")
+        print(question)
+    
 
         if 'Conversation' in [table.name for table in tables]:
             return 'Conversation', question
