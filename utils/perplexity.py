@@ -1,6 +1,13 @@
 from openai import OpenAI
+import dotenv
+import os
 
-YOUR_API_KEY = "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"
+dotenv.load_dotenv()
+
+
+
+
+
 
 
 def ask_expert(question):
@@ -19,17 +26,15 @@ def ask_expert(question):
         },
     ]
 
-    client = OpenAI(api_key=YOUR_API_KEY, base_url="https://api.perplexity.ai")
+    client = OpenAI(api_key=os.getenv('PERPLEXITY_KEY'), base_url="https://api.perplexity.ai")
 
 
 
     # chat completion with streaming
     response_stream = client.chat.completions.create(
-        model="llama-3-sonar-large-32k-online",
+        model="llama-3.1-sonar-huge-128k-online",
         messages=messages,
         stream=True,
-        temperature=0.3,
-    
     )
     for response in response_stream:
         yield response.choices[0].message['content']
