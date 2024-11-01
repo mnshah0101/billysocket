@@ -310,7 +310,7 @@ class PromptEngineer:
 
             return answer.content
         
-        query = player_log_get_answer('anthropic', question)
+        query = player_log_get_answer('openai', question)
 
         print(query)
 
