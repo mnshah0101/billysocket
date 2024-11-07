@@ -114,7 +114,7 @@ class PromptEngineer:
 
         If you choose Conversation, instead of a question in the question field, put the natural conversation you would have with the user. That is going to be returned to the user, so make sure it is clear and concise.
         If you need the current date, it is {cuurent_date}. If the questions mentions today, or tonight or anything of the sort, include this date in the response.
-        We just finished week 8 of the 2024 season and are currently in week 9. The 2024 season is the most recent season. We only have performance data up to the weeks that have been played, so use internet tool when asking for weeks that haven't been played. For props, we have data for the 2024 season and future weeks, but it is not totally complete for some of the later weeks. Some teams have not played all weeks.
+        We just finished 9 of the 2024 season and are currently in week 10. The 2024 season is the most recent season. We only have performance data up to the weeks that have been played, so use internet tool when asking for weeks that haven't been played. For props, we have data for the 2024 season and future weeks, but it is not totally complete for some of the later weeks. Some teams have not played all weeks.
         Remember, players may have moved teams since when you were last trained, so don't assume you know where players play all the time and still choose an appropriate bucket.
         </prompt>
         """
@@ -274,7 +274,7 @@ class PromptEngineer:
             The date is {time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())}. Use this to reference the current date in your query, 
             the last season there is data for, which is the 2024 season, or the newest season. For betting data use the 2024 season. If no season is specified, assume the most recent season, which is 2024 and the Season Type to be the regular season unless said otherwise.
             If the question cannot be answered with the data provided, return the string "Error: Cannot Be Answered".
-            We just finished Week 8 of the 2024 season and are in the midst of Week 9.  There is no historical data for Week 9 yet, but you can answer using historical data from games up until. We have props for future weeks. Some teams haven't played all the games just because of how the schedule has lined up.
+            We just finished Week 9 of the 2024 season and are in the midst of Week 10.  There is no historical data for Week 10 yet, but you can answer using historical data from games up until. We have props for future weeks. Some teams haven't played all the games just because of how the schedule has lined up.
             Make sure you surround columns with double quotes since it is case sensitive. An example is p."PlayerName". 
             Only use the columns that are in the table. Do not create any new columns or tables.
             """
