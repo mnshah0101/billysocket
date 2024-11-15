@@ -274,7 +274,7 @@ class PromptEngineer:
             The date is {time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())}. Use this to reference the current date in your query, 
             the last season there is data for, which is the 2024 season, or the newest season. For betting data use the 2024 season. If no season is specified, assume the most recent season, which is 2024 and the Season Type to be the regular season unless said otherwise.
             If the question cannot be answered with the data provided, return the string "Error: Cannot Be Answered".
-            We just finished Week 9 of the 2024 season and are in the midst of Week 10.  There is no historical data for Week 10 yet, but you can answer using historical data from games up until. We have props for future weeks. Some teams haven't played all the games just because of how the schedule has lined up.
+            We just finished Week 10 of the 2024 season and are in the midst of Week 10.  There is no historical data for Week 10 yet, but you can answer using historical data from games up until. We have props for future weeks. Some teams haven't played all the games just because of how the schedule has lined up.
             Make sure you surround columns with double quotes since it is case sensitive. An example is p."PlayerName". 
             Only use the columns that are in the table. Do not create any new columns or tables.
             """
